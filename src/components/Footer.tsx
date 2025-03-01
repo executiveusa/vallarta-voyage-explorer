@@ -110,7 +110,10 @@ const Footer = () => {
 
         {/* Bottom section */}
         <div className="pt-10 border-t border-gray-800 text-center md:text-left md:flex md:justify-between text-gray-500 text-sm">
-          <p>© {currentYear} Visit Vallarta. All rights reserved.</p>
+          <div>
+            <p>© {currentYear} Visit Vallarta. All rights reserved.</p>
+            <p className="mt-1 text-ocean-400 font-medium">Hosted by Effrian</p>
+          </div>
           <div className="mt-4 md:mt-0 space-x-6">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
             <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
