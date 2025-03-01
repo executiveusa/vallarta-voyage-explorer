@@ -1,8 +1,11 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const HeroSection = () => {
+  const [videoLoaded, setVideoLoaded] = useState(false);
+  
   const scrollToTours = () => {
     const toursSection = document.getElementById("tours");
     if (toursSection) {
@@ -10,17 +13,57 @@ const HeroSection = () => {
     }
   };
 
+  // Handle video load event
+  useEffect(() => {
+    const video = document.getElementById("background-video") as HTMLVideoElement;
+    if (video) {
+      video.addEventListener("loadeddata", () => {
+        setVideoLoaded(true);
+      });
+      
+      // If video doesn't load in 3 seconds, show the fallback image
+      const timeout = setTimeout(() => {
+        if (!videoLoaded) {
+          setVideoLoaded(true); // Show content even if video failed
+          console.log("Video load timeout - showing fallback image");
+        }
+      }, 3000);
+      
+      return () => {
+        clearTimeout(timeout);
+        video.removeEventListener("loadeddata", () => setVideoLoaded(true));
+      };
+    }
+  }, []);
+
   return (
     <section className="relative h-screen w-full overflow-hidden">
-      {/* Background Image with Overlay */}
+      {/* Background Video with Fallback Image */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-transparent z-10"></div>
-        <img
-          src="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
-          alt="Puerto Vallarta coastline"
+        
+        {/* Video Background */}
+        <video
+          id="background-video"
+          autoPlay
+          muted
+          loop
+          playsInline
           className="object-cover w-full h-full"
-          loading="eager"
-        />
+          poster="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
+        >
+          <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        
+        {/* Fallback image (displays if video fails) */}
+        {!videoLoaded && (
+          <img
+            src="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
+            alt="Puerto Vallarta coastline"
+            className="object-cover w-full h-full"
+          />
+        )}
       </div>
 
       {/* Content */}
