@@ -1,10 +1,12 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const HeroSection = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
   
   const scrollToTours = () => {
     const toursSection = document.getElementById("tours");
@@ -15,26 +17,39 @@ const HeroSection = () => {
 
   // Handle video load event
   useEffect(() => {
-    const video = document.getElementById("background-video") as HTMLVideoElement;
+    const video = videoRef.current;
+    
+    const handleVideoLoaded = () => {
+      console.log("Video loaded successfully");
+      setVideoLoaded(true);
+    };
+    
+    const handleVideoError = () => {
+      console.log("Video failed to load - using fallback image");
+      setVideoError(true);
+      setVideoLoaded(true); // Show content even if video failed
+    };
+    
     if (video) {
-      video.addEventListener("loadeddata", () => {
-        setVideoLoaded(true);
-      });
+      video.addEventListener("loadeddata", handleVideoLoaded);
+      video.addEventListener("error", handleVideoError);
       
-      // If video doesn't load in 3 seconds, show the fallback image
+      // If video doesn't load in 5 seconds, show the fallback image
       const timeout = setTimeout(() => {
         if (!videoLoaded) {
-          setVideoLoaded(true); // Show content even if video failed
           console.log("Video load timeout - showing fallback image");
+          setVideoLoaded(true); // Show content even if video failed
+          setVideoError(true);
         }
-      }, 3000);
+      }, 5000);
       
       return () => {
         clearTimeout(timeout);
-        video.removeEventListener("loadeddata", () => setVideoLoaded(true));
+        video.removeEventListener("loadeddata", handleVideoLoaded);
+        video.removeEventListener("error", handleVideoError);
       };
     }
-  }, []);
+  }, [videoLoaded]);
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
@@ -42,27 +57,27 @@ const HeroSection = () => {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-transparent z-10"></div>
         
-        {/* Video Background */}
-        <video
-          id="background-video"
-          autoPlay
-          muted
-          loop
-          playsInline
+        {/* Fallback image (displayed under video and if video fails) */}
+        <img
+          src="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
+          alt="Puerto Vallarta coastline"
           className="object-cover w-full h-full"
-          poster="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
-        >
-          <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        />
         
-        {/* Fallback image (displays if video fails) */}
-        {!videoLoaded && (
-          <img
-            src="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
-            alt="Puerto Vallarta coastline"
-            className="object-cover w-full h-full"
-          />
+        {/* Video Background */}
+        {!videoError && (
+          <video
+            ref={videoRef}
+            id="background-video"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className={`object-cover w-full h-full absolute inset-0 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+            style={{ transition: "opacity 0.5s ease-in-out" }}
+          >
+            <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.mp4" type="video/mp4" />
+          </video>
         )}
       </div>
 
