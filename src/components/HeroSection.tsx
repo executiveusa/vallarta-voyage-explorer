@@ -19,61 +19,65 @@ const HeroSection = () => {
     const video = videoRef.current;
     
     if (video) {
-      console.log("Video element found, attempting to load");
+      console.log("Video element found, setting up...");
       
-      // Set up event listeners for debugging and state management
+      // Set video attributes directly
+      video.preload = "auto";
+      video.muted = true;
+      video.playsInline = true;
+      video.loop = true;
+      
+      // Event handlers with more debugging
       const handleCanPlay = () => {
-        console.log("Video can play");
+        console.log("Video can play event fired");
         setVideoLoaded(true);
+        
+        // Try to play the video
         video.play()
-          .then(() => console.log("Video is now playing"))
-          .catch(error => console.error("Video play error:", error));
+          .then(() => console.log("Video playback started successfully"))
+          .catch(error => {
+            console.error("Video play error:", error);
+            // Still mark as loaded even if autoplay fails
+            setVideoLoaded(true);
+          });
       };
       
       const handleLoadedData = () => {
-        console.log("Video loadeddata event fired");
+        console.log("Video data loaded completely");
       };
       
-      const handleLoadedMetadata = () => {
-        console.log("Video metadata loaded");
-      };
-      
-      const handleError = () => {
-        console.error("Video load error occurred");
-        // Still show content even if video fails
+      const handleError = (e: Event) => {
+        console.error("Video error event:", e);
+        // Show content anyway if video fails
         setVideoLoaded(true);
       };
       
-      // Add all listeners
+      // Add event listeners
       video.addEventListener("canplay", handleCanPlay);
       video.addEventListener("loadeddata", handleLoadedData);
-      video.addEventListener("loadedmetadata", handleLoadedMetadata);
       video.addEventListener("error", handleError);
-      
-      // Set video to preload
-      video.preload = "auto";
       
       // Force load attempt
       try {
+        console.log("Attempting to load video...");
         video.load();
-        console.log("Video load method called");
       } catch (err) {
         console.error("Error calling video.load():", err);
+        setVideoLoaded(true);
       }
       
-      // Set a fallback timer to display content even if video never loads
+      // Set a longer fallback timer (5 seconds)
       const fallbackTimer = setTimeout(() => {
         if (!videoLoaded) {
-          console.log("Video load timeout - showing content anyway");
+          console.log("Video load timeout (5s) - showing content anyway");
           setVideoLoaded(true);
         }
-      }, 3000);
+      }, 5000);
       
       return () => {
-        // Clean up all listeners
+        // Clean up
         video.removeEventListener("canplay", handleCanPlay);
         video.removeEventListener("loadeddata", handleLoadedData);
-        video.removeEventListener("loadedmetadata", handleLoadedMetadata);
         video.removeEventListener("error", handleError);
         clearTimeout(fallbackTimer);
       };
@@ -97,13 +101,12 @@ const HeroSection = () => {
         {/* Video Background */}
         <video
           ref={videoRef}
-          muted
-          loop
-          playsInline
           className={`object-cover w-full h-full absolute inset-0 transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          poster="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
         >
           <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.mp4" type="video/mp4" />
           <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.webm" type="video/webm" />
+          Your browser does not support the video tag.
         </video>
       </div>
 
