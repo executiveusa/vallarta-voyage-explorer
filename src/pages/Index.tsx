@@ -5,6 +5,7 @@ import HeroSection from "@/components/HeroSection";
 import ToursSection from "@/components/ToursSection";
 import BookingSection from "@/components/BookingSection";
 import Footer from "@/components/Footer";
+import Chatbot from "@/components/Chatbot";
 
 const Index = () => {
   // Smooth scroll functionality for anchor links
@@ -50,6 +51,7 @@ const Index = () => {
         <BookingSection />
       </main>
       <Footer />
+      <Chatbot />
     </div>
   );
 };
