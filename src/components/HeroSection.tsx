@@ -14,38 +14,71 @@ const HeroSection = () => {
     }
   };
 
-  // Handle video load event
+  // Handle video loading and fallback
   useEffect(() => {
     const video = videoRef.current;
     
     if (video) {
-      // Preload the video to improve chances of loading
-      video.preload = "auto";
+      console.log("Video element found, attempting to load");
       
-      // Add load and playing event listeners
-      const handleCanPlayThrough = () => {
-        console.log("Video can play through");
+      // Set up event listeners for debugging and state management
+      const handleCanPlay = () => {
+        console.log("Video can play");
         setVideoLoaded(true);
-        // Start playing once it's ready
-        video.play().catch(err => console.error("Video play failed:", err));
+        video.play()
+          .then(() => console.log("Video is now playing"))
+          .catch(error => console.error("Video play error:", error));
       };
       
-      const handleError = (e: ErrorEvent) => {
-        console.error("Video error:", e);
+      const handleLoadedData = () => {
+        console.log("Video loadeddata event fired");
       };
       
-      video.addEventListener("canplaythrough", handleCanPlayThrough);
+      const handleLoadedMetadata = () => {
+        console.log("Video metadata loaded");
+      };
+      
+      const handleError = () => {
+        console.error("Video load error occurred");
+        // Still show content even if video fails
+        setVideoLoaded(true);
+      };
+      
+      // Add all listeners
+      video.addEventListener("canplay", handleCanPlay);
+      video.addEventListener("loadeddata", handleLoadedData);
+      video.addEventListener("loadedmetadata", handleLoadedMetadata);
       video.addEventListener("error", handleError);
       
+      // Set video to preload
+      video.preload = "auto";
+      
       // Force load attempt
-      video.load();
+      try {
+        video.load();
+        console.log("Video load method called");
+      } catch (err) {
+        console.error("Error calling video.load():", err);
+      }
+      
+      // Set a fallback timer to display content even if video never loads
+      const fallbackTimer = setTimeout(() => {
+        if (!videoLoaded) {
+          console.log("Video load timeout - showing content anyway");
+          setVideoLoaded(true);
+        }
+      }, 3000);
       
       return () => {
-        video.removeEventListener("canplaythrough", handleCanPlayThrough);
+        // Clean up all listeners
+        video.removeEventListener("canplay", handleCanPlay);
+        video.removeEventListener("loadeddata", handleLoadedData);
+        video.removeEventListener("loadedmetadata", handleLoadedMetadata);
         video.removeEventListener("error", handleError);
+        clearTimeout(fallbackTimer);
       };
     }
-  }, []);
+  }, [videoLoaded]);
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
@@ -54,7 +87,7 @@ const HeroSection = () => {
         {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-transparent z-10"></div>
         
-        {/* Fallback image (always displayed as base layer) */}
+        {/* Fallback image (always displayed) */}
         <img
           src="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
           alt="Puerto Vallarta coastline"
@@ -67,10 +100,10 @@ const HeroSection = () => {
           muted
           loop
           playsInline
-          className={`object-cover w-full h-full absolute inset-0 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
-          style={{ transition: "opacity 1s ease-in-out" }}
+          className={`object-cover w-full h-full absolute inset-0 transition-opacity duration-1000 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
         >
           <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.mp4" type="video/mp4" />
+          <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.webm" type="video/webm" />
         </video>
       </div>
 
