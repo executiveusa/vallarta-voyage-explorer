@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Link } from "react-router-dom";
+import UserMenuButton from "@/components/UserMenuButton";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -35,12 +37,12 @@ export const Navbar = () => {
     >
       <nav className="max-w-7xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <a 
-          href="/" 
+        <Link 
+          to="/" 
           className="text-2xl font-bold text-ocean-800 tracking-tight relative z-10"
         >
           <span className="text-ocean-600">VISIT</span> VALLARTA
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
@@ -59,9 +61,7 @@ export const Navbar = () => {
               </li>
             ))}
           </ul>
-          <Button className="bg-ocean-600 hover:bg-ocean-700 text-white rounded-full px-6">
-            Book Now
-          </Button>
+          <UserMenuButton />
         </div>
 
         {/* Mobile Menu Button */}
@@ -98,12 +98,11 @@ export const Navbar = () => {
             ))}
           </ul>
           <div className="mt-8">
-            <Button 
-              className="w-full bg-ocean-600 hover:bg-ocean-700 text-white rounded-full"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Book Now
-            </Button>
+            <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+              <Button className="w-full bg-ocean-600 hover:bg-ocean-700 text-white rounded-full">
+                Sign In
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>

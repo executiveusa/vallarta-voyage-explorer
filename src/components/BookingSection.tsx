@@ -5,11 +5,16 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CalendarIcon, Users, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const BookingSection = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
+    email: user?.email || "",
     phone: "",
     date: "",
     guests: "",
@@ -26,13 +31,20 @@ const BookingSection = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!user) {
+      toast.info("Please sign in to submit your booking request");
+      navigate("/auth");
+      return;
+    }
+    
     console.log("Form submitted:", formData);
     toast.success("Your booking request has been sent! We'll contact you soon.");
     
     // Reset form
     setFormData({
       name: "",
-      email: "",
+      email: user?.email || "",
       phone: "",
       date: "",
       guests: "",
@@ -96,6 +108,7 @@ const BookingSection = () => {
                     onChange={handleInputChange}
                     required
                     className="rounded-xl py-6 pl-10"
+                    readOnly={!!user}
                   />
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
