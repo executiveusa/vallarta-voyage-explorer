@@ -5,7 +5,6 @@ import { useEffect, useState, useRef } from "react";
 
 const HeroSection = () => {
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const [videoError, setVideoError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   
   const scrollToTours = () => {
@@ -19,45 +18,43 @@ const HeroSection = () => {
   useEffect(() => {
     const video = videoRef.current;
     
-    const handleVideoLoaded = () => {
-      console.log("Video loaded successfully");
-      setVideoLoaded(true);
-    };
-    
-    const handleVideoError = () => {
-      console.log("Video failed to load - using fallback image");
-      setVideoError(true);
-      setVideoLoaded(true); // Show content even if video failed
-    };
-    
     if (video) {
-      video.addEventListener("loadeddata", handleVideoLoaded);
-      video.addEventListener("error", handleVideoError);
+      // Preload the video to improve chances of loading
+      video.preload = "auto";
       
-      // If video doesn't load in 5 seconds, show the fallback image
-      const timeout = setTimeout(() => {
-        if (!videoLoaded) {
-          console.log("Video load timeout - showing fallback image");
-          setVideoLoaded(true); // Show content even if video failed
-          setVideoError(true);
-        }
-      }, 5000);
+      // Add load and playing event listeners
+      const handleCanPlayThrough = () => {
+        console.log("Video can play through");
+        setVideoLoaded(true);
+        // Start playing once it's ready
+        video.play().catch(err => console.error("Video play failed:", err));
+      };
+      
+      const handleError = (e: ErrorEvent) => {
+        console.error("Video error:", e);
+      };
+      
+      video.addEventListener("canplaythrough", handleCanPlayThrough);
+      video.addEventListener("error", handleError);
+      
+      // Force load attempt
+      video.load();
       
       return () => {
-        clearTimeout(timeout);
-        video.removeEventListener("loadeddata", handleVideoLoaded);
-        video.removeEventListener("error", handleVideoError);
+        video.removeEventListener("canplaythrough", handleCanPlayThrough);
+        video.removeEventListener("error", handleError);
       };
     }
-  }, [videoLoaded]);
+  }, []);
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Background Video with Fallback Image */}
       <div className="absolute inset-0 z-0">
+        {/* Overlay gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-transparent z-10"></div>
         
-        {/* Fallback image (displayed under video and if video fails) */}
+        {/* Fallback image (always displayed as base layer) */}
         <img
           src="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
           alt="Puerto Vallarta coastline"
@@ -65,20 +62,16 @@ const HeroSection = () => {
         />
         
         {/* Video Background */}
-        {!videoError && (
-          <video
-            ref={videoRef}
-            id="background-video"
-            autoPlay
-            muted
-            loop
-            playsInline
-            className={`object-cover w-full h-full absolute inset-0 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
-            style={{ transition: "opacity 0.5s ease-in-out" }}
-          >
-            <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.mp4" type="video/mp4" />
-          </video>
-        )}
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          className={`object-cover w-full h-full absolute inset-0 ${videoLoaded ? 'opacity-100' : 'opacity-0'}`}
+          style={{ transition: "opacity 1s ease-in-out" }}
+        >
+          <source src="https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.mp4" type="video/mp4" />
+        </video>
       </div>
 
       {/* Content */}
