@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  polly-bff:
+    build: .
+    container_name: polly-bff
+    ports:
+      - "8000:8000"
+    environment:
+      - NOTION_API_KEY=${NOTION_API_KEY}
+      - NOTION_DATABASE_ID=${NOTION_DATABASE_ID}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APOLLO_ENDPOINT=${APOLLO_ENDPOINT}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

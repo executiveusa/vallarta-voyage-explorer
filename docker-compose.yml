@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  # FastAPI Backend
+  polly-bff:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: polly-bff
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"  # Only expose on loopback for local, override on VPS
+    environment:
+      - NOTION_API_KEY=${NOTION_API_KEY}
+      - NOTION_DATABASE_ID=${NOTION_DATABASE_ID}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APOLLO_ENDPOINT=${APOLLO_ENDPOINT}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - LOG_LEVEL=INFO
+    env_file:
+      - .env
+    volumes:
+      - ./backend:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # React Frontend (built & served via nginx)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: vallarta-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - polly-bff
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  default:
+    name: vallarta-network
