@@ -1,0 +1,409 @@
+{
+  "generated_at": "2025-12-07T00:00:00Z",
+  "project": "Vallarta Voyage Living Sunset Engine",
+  "framework": "Vite + React + TypeScript",
+  "package_manager": "npm",
+  "build_tool": "vite",
+  
+  "components": [
+    {
+      "name": "HeroSection",
+      "path": "src/components/HeroSection.tsx",
+      "type": "react",
+      "usage": ["pages/Index.tsx"],
+      "props": [],
+      "description": "Current: Static video hero with fade animations. Will be replaced with Living Sunset Hero with day/golden/night phases.",
+      "status": "needs_refactor",
+      "priority": "P0"
+    },
+    {
+      "name": "ToursSection",
+      "path": "src/components/ToursSection.tsx",
+      "type": "react",
+      "usage": ["pages/Index.tsx"],
+      "props": [],
+      "description": "Displays tours from hardcoded tour-data.ts with category filters. Will migrate to backend API.",
+      "status": "needs_migration",
+      "priority": "P1"
+    },
+    {
+      "name": "TourCard",
+      "path": "src/components/TourCard.tsx",
+      "type": "react",
+      "usage": ["ToursSection.tsx"],
+      "props": ["tour", "featured"],
+      "description": "Individual tour display card. Will be enhanced with Motion Primitives.",
+      "status": "needs_enhancement",
+      "priority": "P2"
+    },
+    {
+      "name": "BookingSection",
+      "path": "src/components/BookingSection.tsx",
+      "type": "react",
+      "usage": ["pages/Index.tsx"],
+      "props": [],
+      "description": "Generic booking form. May be replaced by quiz-based lead capture.",
+      "status": "evaluate",
+      "priority": "P2"
+    },
+    {
+      "name": "Chatbot",
+      "path": "src/components/Chatbot.tsx",
+      "type": "react",
+      "usage": ["pages/Index.tsx"],
+      "props": [],
+      "description": "Supabase Edge Function chatbot. Functional but needs UX improvements (quick replies, better loading states).",
+      "status": "needs_enhancement",
+      "priority": "P2"
+    },
+    {
+      "name": "Navbar",
+      "path": "src/components/Navbar.tsx",
+      "type": "react",
+      "usage": ["pages/Index.tsx"],
+      "props": [],
+      "description": "Minimal nav (logo + user menu). Needs expansion: Tours, Gallery, Nightlife, Blog, Quiz links.",
+      "status": "needs_expansion",
+      "priority": "P1"
+    },
+    {
+      "name": "Footer",
+      "path": "src/components/Footer.tsx",
+      "type": "react",
+      "usage": ["pages/Index.tsx"],
+      "props": [],
+      "description": "Basic footer with copyright. Needs social proof, newsletter, Instagram feed.",
+      "status": "needs_expansion",
+      "priority": "P2"
+    },
+    {
+      "name": "AuthForm",
+      "path": "src/components/AuthForm.tsx",
+      "type": "react",
+      "usage": ["pages/Auth.tsx"],
+      "props": [],
+      "description": "Supabase auth form. May not be needed for MVP (anonymous uploads OK).",
+      "status": "defer",
+      "priority": "P3"
+    },
+    {
+      "name": "UserMenuButton",
+      "path": "src/components/UserMenuButton.tsx",
+      "type": "react",
+      "usage": ["Navbar.tsx"],
+      "props": [],
+      "description": "User dropdown menu. May not be needed for MVP.",
+      "status": "defer",
+      "priority": "P3"
+    }
+  ],
+  
+  "pages": [
+    {
+      "name": "Index",
+      "path": "src/pages/Index.tsx",
+      "route": "/",
+      "description": "Homepage with hero, tours, booking. Will be refactored with Living Sunset Hero.",
+      "status": "needs_refactor",
+      "priority": "P0"
+    },
+    {
+      "name": "Auth",
+      "path": "src/pages/Auth.tsx",
+      "route": "/auth",
+      "description": "Authentication page. May defer to post-MVP.",
+      "status": "defer",
+      "priority": "P3"
+    },
+    {
+      "name": "NotFound",
+      "path": "src/pages/NotFound.tsx",
+      "route": "*",
+      "description": "404 page. Functional, may enhance with better UX later.",
+      "status": "ok",
+      "priority": "P3"
+    }
+  ],
+  
+  "routes_to_create": [
+    {
+      "route": "/gallery",
+      "component": "Gallery",
+      "description": "Sunset photo gallery with infinite scroll, masonry grid, filters",
+      "priority": "P0"
+    },
+    {
+      "route": "/nightlife",
+      "component": "Nightlife",
+      "description": "Business directory listing with phase-aware sorting",
+      "priority": "P0"
+    },
+    {
+      "route": "/business/:slug",
+      "component": "BusinessDetail",
+      "description": "Individual business detail page with features, map, booking CTAs",
+      "priority": "P0"
+    },
+    {
+      "route": "/upload",
+      "component": "Upload",
+      "description": "Sunset photo upload form with image preview and metadata capture",
+      "priority": "P0"
+    },
+    {
+      "route": "/quiz",
+      "component": "Quiz",
+      "description": "15-question scorecard quiz with multi-step form and results",
+      "priority": "P0"
+    },
+    {
+      "route": "/winners",
+      "component": "Winners",
+      "description": "Contest leaderboard showing top sunset photos per contest",
+      "priority": "P1"
+    },
+    {
+      "route": "/blog",
+      "component": "Blog",
+      "description": "Blog listing page with 6-7 months of backdated content",
+      "priority": "P1"
+    },
+    {
+      "route": "/blog/:slug",
+      "component": "BlogPost",
+      "description": "Individual blog post detail page with TOC and reading progress",
+      "priority": "P1"
+    }
+  ],
+  
+  "tokens": {
+    "colors": {
+      "ocean": {
+        "50": "#f0f9ff",
+        "100": "#e0f2fe",
+        "200": "#bae6fd",
+        "300": "#7dd3fc",
+        "400": "#38bdf8",
+        "500": "#0ea5e9",
+        "600": "#0284c7",
+        "700": "#0369a1",
+        "800": "#075985",
+        "900": "#0c4a6e"
+      },
+      "sand": {
+        "50": "#fefce8",
+        "100": "#fef9c3",
+        "200": "#fef08a",
+        "300": "#fde047",
+        "400": "#facc15",
+        "500": "#eab308",
+        "600": "#ca8a04",
+        "700": "#a16207",
+        "800": "#854d0e",
+        "900": "#713f12"
+      },
+      "jungle": {
+        "50": "#f0fdf4",
+        "100": "#dcfce7",
+        "200": "#bbf7d0",
+        "300": "#86efac",
+        "400": "#4ade80",
+        "500": "#22c55e",
+        "600": "#16a34a",
+        "700": "#15803d",
+        "800": "#166534",
+        "900": "#14532d"
+      },
+      "notes": "Will add phase-specific variants: Day (bright ocean/white), Golden (warm orange/pink/gold), Night (deep ocean/neon accents)"
+    },
+    "typography": {
+      "font_family": "System default (likely -apple-system, Segoe UI, etc.)",
+      "note": "Will upgrade to premium sans-serif (Geist, Inter, or Manrope) in Phase 3",
+      "scale": {
+        "headline_desktop": "text-4xl md:text-6xl lg:text-7xl (56-72px)",
+        "headline_mobile": "text-3xl (32-40px)",
+        "body": "text-lg md:text-xl",
+        "small": "text-sm"
+      }
+    },
+    "spacing": {
+      "section_padding": "py-24",
+      "container_padding": "px-6 md:px-10",
+      "card_gap": "gap-8",
+      "note": "Consistent use of Tailwind spacing scale"
+    },
+    "radius": {
+      "button": "rounded-full",
+      "card": "rounded-lg",
+      "badge": "rounded-full",
+      "note": "Heavy use of rounded-full for buttons and pills"
+    },
+    "shadows": {
+      "card": "shadow-xl",
+      "note": "Limited shadow usage currently, will expand with Motion Primitives"
+    }
+  },
+  
+  "animations": {
+    "existing": [
+      {
+        "name": "fade-up",
+        "definition": "opacity 0→1, translateY 20px→0, 0.7s ease-out",
+        "usage": ["HeroSection", "ToursSection"],
+        "note": "Basic entrance animation"
+      },
+      {
+        "name": "floating",
+        "definition": "translateY 0→-10px→0, 6s ease-in-out infinite",
+        "usage": ["HeroSection chevron"],
+        "note": "Scroll indicator animation"
+      },
+      {
+        "name": "fade-in",
+        "definition": "opacity 0→1, 0.7s ease-out",
+        "usage": ["General fades"],
+        "note": "Simple opacity animation"
+      }
+    ],
+    "to_add": [
+      "Parallax layers (hero background at different scroll speeds)",
+      "Scroll-linked reveals (sections fade/slide in on scroll-into-view)",
+      "Stagger animations (card grids with delayed entry)",
+      "Hover depth (lift, shadow, scale on interactive elements)",
+      "Phase transitions (smooth color/content changes for day→golden→night)",
+      "Progress bars (reading progress, quiz progress)",
+      "Drawer/modal animations (slide-in panels, fade-in overlays)"
+    ]
+  },
+  
+  "dependencies": {
+    "framework": {
+      "react": "^18.3.1",
+      "react-dom": "^18.3.1",
+      "vite": "^5.4.1",
+      "typescript": "^5.5.3"
+    },
+    "routing": {
+      "current": "react-router-dom@^6.26.2",
+      "planned": "@tanstack/react-router (will replace react-router-dom)"
+    },
+    "state": {
+      "current": "@tanstack/react-query@^5.56.2",
+      "planned": "Keep and expand usage"
+    },
+    "ui": {
+      "tailwindcss": "^3.4.11",
+      "tailwindcss-animate": "^1.0.7",
+      "radix-ui": "Various @radix-ui/react-* packages (shadcn/ui primitives)",
+      "lucide-react": "^0.462.0 (icons)",
+      "framer-motion": "Not installed yet, will add in Phase 3"
+    },
+    "forms": {
+      "react-hook-form": "^7.53.0",
+      "zod": "^3.23.8",
+      "@hookform/resolvers": "^3.9.0"
+    },
+    "backend_current": {
+      "note": "Python FastAPI in /backend/, will be replaced with Node/Hono",
+      "fastapi": "0.104.1",
+      "uvicorn": "0.24.0",
+      "notion-client": "2.2.1"
+    },
+    "backend_planned": {
+      "hono": "To be installed in Phase 1",
+      "prisma": "To be installed in Phase 1",
+      "@prisma/client": "To be installed in Phase 1",
+      "suncalc": "For sunset phase calculations",
+      "zod": "Already installed (will use for API validation)"
+    },
+    "database": {
+      "current": "Notion API (via notion-client in Python backend)",
+      "planned": "PostgreSQL via Prisma on Railway"
+    },
+    "auth": {
+      "current": "@supabase/supabase-js@^2.49.1",
+      "planned": "Keep for chatbot, defer user auth to post-MVP"
+    },
+    "deployment": {
+      "current": "None (local dev only)",
+      "planned": "Railway (backend + DB), Vercel (frontend), Docker"
+    }
+  },
+  
+  "assets": {
+    "tour_data": {
+      "path": "src/assets/tour-data.ts",
+      "type": "hardcoded_json",
+      "entries": 6,
+      "note": "Will migrate to database (Business table) in Phase 1"
+    },
+    "images": {
+      "source": "Unsplash (via URLs)",
+      "optimization": "None (will add Cloudinary/imgix in Phase 8)",
+      "lazy_loading": "Not implemented (will add in Phase 8)"
+    },
+    "video": {
+      "hero_video": "https://storage.googleapis.com/lovable-public-assets/puerto-vallarta-beach.mp4",
+      "size": "~2MB (unoptimized)",
+      "note": "Will conditionally load based on network speed in Phase 3"
+    }
+  },
+  
+  "testing": {
+    "unit": "None (not set up)",
+    "e2e": "None (Playwright to be added in Phase 8)",
+    "lighthouse": "None (to be added in Phase 8)",
+    "target_scores": {
+      "performance": 90,
+      "accessibility": 95,
+      "best_practices": 95,
+      "seo": 90
+    }
+  },
+  
+  "build": {
+    "command": "vite build",
+    "output_dir": "dist",
+    "bundle_size": "Unknown (not measured yet, target <500KB initial load)",
+    "optimization": "Minimal (default Vite config, no code splitting)"
+  },
+  
+  "dead_code": {
+    "note": "No obvious dead code yet, but after TanStack Router migration, react-router-dom components will be unused",
+    "candidates": [
+      "react-router-dom (after migration)",
+      "AuthForm + Auth page (if auth is deferred)",
+      "Python backend /backend/ (after Node backend is deployed)"
+    ]
+  },
+  
+  "technical_debt": {
+    "p0": [
+      "No living sunset concept (static hero)",
+      "Hardcoded tour data (should be in database)",
+      "No backend for new features (uploads, quiz, contests)",
+      "No motion beyond basic fade-up animations"
+    ],
+    "p1": [
+      "react-router-dom instead of TanStack Router (less type-safe)",
+      "No image optimization or lazy loading",
+      "No accessibility enhancements (skip link, focus states)",
+      "No blog or content marketing infrastructure"
+    ],
+    "p2": [
+      "Generic UI components (no Motion Primitives)",
+      "Minimal footer (no social proof)",
+      "No monitoring or error tracking",
+      "No CI/CD pipeline"
+    ]
+  },
+  
+  "summary": {
+    "total_components": 9,
+    "total_pages": 3,
+    "new_routes_planned": 8,
+    "total_features_planned": 20,
+    "estimated_completion": "14 days",
+    "current_status": "Phase 0 complete, awaiting approval for Phase 1"
+  }
+}

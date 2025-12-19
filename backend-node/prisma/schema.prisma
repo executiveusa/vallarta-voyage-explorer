@@ -1,0 +1,370 @@
+// This is your Prisma schema file
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Model (for admin authentication and photo uploads)
+model User {
+  id            String         @id @default(cuid())
+  email         String?        @unique
+  name          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  // Relations
+  sunsetPhotos  SunsetPhoto[]
+  contestEntries ContestEntry[]
+  quizSubmissions QuizSubmission[]
+  
+  @@map("users")
+}
+
+// Business Model (Luxury Hotels, Restaurants, Nightlife)
+// BILINGUAL: All content stored in Spanish + English
+model Business {
+  id              String    @id @default(cuid())
+  
+  // Bilingual Core Content
+  nameEN          String    // English name
+  nameES          String    // Spanish name
+  descriptionEN   String    @db.Text // English description
+  descriptionES   String    @db.Text // Spanish description
+  
+  // Contact & Location
+  address         String?
+  city            String    @default("Puerto Vallarta")
+  latitude        Float?
+  longitude       Float?
+  phone           String?
+  email           String?
+  website         String?
+  
+  // Business Details
+  category        BusinessCategory
+  luxuryTier      Int       @default(3) // 1-5 scale (5 = ultra-luxury)
+  priceRange      String?   // $, $$, $$$, $$$$
+  
+  // Sunset Phase Recommendations
+  // Which phase is this business best for?
+  bestForPhases   String[]  // ["day", "golden", "night"]
+  
+  // Images
+  imageUrls       String[]  // Array of photo URLs
+  logoUrl         String?
+  
+  // SEO & Discovery
+  slug            String    @unique
+  tags            String[]  // ["rooftop", "ocean-view", "romantic", etc.]
+  
+  // Scraping Metadata
+  scrapedFrom     String?   // "firecrawl", "apollo", "manual"
+  sourceUrl       String?   // Original listing URL
+  lastScrapedAt   DateTime?
+  approvalStatus  ApprovalStatus @default(PENDING)
+  optedOut        Boolean   @default(false)
+  
+  // Status
+  isActive        Boolean   @default(true)
+  isFeatured      Boolean   @default(false)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  features        BusinessFeature[]
+  
+  @@index([category])
+  @@index([city])
+  @@index([slug])
+  @@index([approvalStatus])
+  @@map("businesses")
+}
+
+enum BusinessCategory {
+  HOTEL
+  RESTAURANT
+  BAR
+  NIGHTCLUB
+  ROOFTOP_BAR
+  BEACH_CLUB
+  YACHT_CHARTER
+  SPA
+  TOUR_OPERATOR
+  EVENT_VENUE
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Business Features (Bilingual key features)
+model BusinessFeature {
+  id          String    @id @default(cuid())
+  businessId  String
+  
+  // Bilingual feature descriptions
+  labelEN     String    // "Infinity Pool", "Ocean View", etc.
+  labelES     String    // "Piscina Infinita", "Vista al Mar", etc.
+  
+  // Relations
+  business    Business  @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  @@map("business_features")
+}
+
+// Sunset Photo Uploads
+model SunsetPhoto {
+  id              String    @id @default(cuid())
+  userId          String?
+  
+  // Photo Details
+  imageUrl        String
+  title           String?
+  caption         String?   @db.Text
+  location        String?
+  capturedAt      DateTime  // When the photo was taken
+  
+  // Metadata
+  phase           SunsetPhase // day, golden, night
+  approvalStatus  ApprovalStatus @default(PENDING)
+  
+  // Contest
+  contestEntries  ContestEntry[]
+  
+  // Social
+  likes           Int       @default(0)
+  views           Int       @default(0)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  user            User?     @relation(fields: [userId], references: [id])
+  
+  @@index([phase])
+  @@index([approvalStatus])
+  @@index([capturedAt])
+  @@map("sunset_photos")
+}
+
+enum SunsetPhase {
+  DAY
+  GOLDEN
+  NIGHT
+}
+
+// Sunset Photo Contests
+model Contest {
+  id              String    @id @default(cuid())
+  
+  // Bilingual Contest Details
+  titleEN         String
+  titleES         String
+  descriptionEN   String    @db.Text
+  descriptionES   String    @db.Text
+  
+  // Contest Dates
+  startDate       DateTime
+  endDate         DateTime
+  
+  // Prizes
+  prizeEN         String?   @db.Text // "Grand Prize: 3-night stay at..."
+  prizeES         String?   @db.Text // "Gran Premio: 3 noches en..."
+  
+  // Status
+  isActive        Boolean   @default(true)
+  winnerId        String?
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  entries         ContestEntry[]
+  
+  @@map("contests")
+}
+
+// Contest Entries (links photos to contests)
+model ContestEntry {
+  id          String    @id @default(cuid())
+  contestId   String
+  photoId     String
+  userId      String?
+  
+  // Judging
+  score       Int?      // Admin-assigned score (1-10)
+  rank        Int?      // Final ranking (1st, 2nd, 3rd)
+  
+  // Timestamps
+  createdAt   DateTime  @default(now())
+  
+  // Relations
+  contest     Contest   @relation(fields: [contestId], references: [id], onDelete: Cascade)
+  photo       SunsetPhoto @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  user        User?     @relation(fields: [userId], references: [id])
+  
+  @@unique([contestId, photoId])
+  @@map("contest_entries")
+}
+
+// Quiz Submissions (Lead Generation)
+model QuizSubmission {
+  id              String    @id @default(cuid())
+  userId          String?
+  
+  // Contact Info (collected in quiz)
+  email           String
+  name            String?
+  phone           String?
+  
+  // Quiz Answers (JSON)
+  answers         Json      // { "q1": "answer1", "q2": "answer2", ... }
+  
+  // Calculated Scores
+  luxuryScore     Int       // 0-100
+  adventureScore  Int       // 0-100
+  culturalScore   Int       // 0-100
+  
+  // Segmentation
+  segment         QuizSegment // B2B or B2C
+  
+  // Language
+  locale          String    @default("en") // "en" or "es"
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  
+  // Relations
+  user            User?     @relation(fields: [userId], references: [id])
+  
+  @@index([email])
+  @@index([segment])
+  @@index([createdAt])
+  @@map("quiz_submissions")
+}
+
+enum QuizSegment {
+  B2B           // Hotel owners, venue managers
+  B2C_LUXURY    // High-end travelers
+  B2C_BUDGET    // Budget-conscious travelers
+}
+
+// Landing Page Blueprint (for quiz variants - used by AI agents)
+model LandingPageBlueprint {
+  id              String    @id @default(cuid())
+  
+  // Metadata
+  variant         String    @unique // "sunset-upload", "nightlife-discovery", "quiz-lead-gen"
+  
+  // Bilingual Content
+  titleEN         String
+  titleES         String
+  subtitleEN      String?   @db.Text
+  subtitleES      String?   @db.Text
+  
+  // Hero Copy
+  hookEN          String    @db.Text
+  hookES          String    @db.Text
+  
+  // Quiz Questions (JSON)
+  questionsEN     Json
+  questionsES     Json
+  
+  // Status
+  isActive        Boolean   @default(true)
+  
+  // A/B Testing
+  impressions     Int       @default(0)
+  conversions     Int       @default(0)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@map("landing_page_blueprints")
+}
+
+// Reddit Pain Point Analysis (for blog content)
+model RedditInsight {
+  id              String    @id @default(cuid())
+  
+  // Source
+  subreddit       String
+  postUrl         String
+  postTitle       String
+  
+  // Extracted Insights
+  painPoint       String    @db.Text // "Tourist traps", "Language barriers", etc.
+  sentiment       String    // "negative", "neutral", "positive"
+  
+  // Keywords
+  keywords        String[]  // ["sunset", "rooftop", "romantic", "luxury"]
+  
+  // Usage
+  usedInBlogPost  Boolean   @default(false)
+  blogPostId      String?
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  
+  @@index([subreddit])
+  @@index([usedInBlogPost])
+  @@map("reddit_insights")
+}
+
+// Blog Posts (generated from Reddit insights)
+model BlogPost {
+  id              String    @id @default(cuid())
+  
+  // Bilingual Content
+  titleEN         String
+  titleES         String
+  slugEN          String    @unique
+  slugES          String    @unique
+  contentEN       String    @db.Text
+  contentES       String    @db.Text
+  excerptEN       String?   @db.Text
+  excerptES       String?   @db.Text
+  
+  // SEO
+  metaTitleEN     String?
+  metaTitleES     String?
+  metaDescriptionEN String? @db.Text
+  metaDescriptionES String? @db.Text
+  
+  // Featured Image
+  imageUrl        String?
+  imageAlt        String?
+  
+  // Categorization
+  category        String
+  tags            String[]
+  
+  // Publication
+  publishedAt     DateTime?
+  isPublished     Boolean   @default(false)
+  
+  // Analytics
+  views           Int       @default(0)
+  
+  // Timestamps
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  @@index([slugEN])
+  @@index([slugES])
+  @@index([publishedAt])
+  @@map("blog_posts")
+}

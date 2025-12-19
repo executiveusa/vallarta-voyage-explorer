@@ -1,0 +1,553 @@
+{
+  "features": [
+    {
+      "id": "F001",
+      "name": "Living Sunset Hero Engine",
+      "description": "Real-time day→sunset→night hero transitions based on Puerto Vallarta sunset phase with motion primitives, dynamic content, and accessibility support",
+      "acceptance_criteria": [
+        "Hero detects current sunset phase (day/golden/night) via API",
+        "Background, colors, and CTAs change based on phase",
+        "Smooth transitions using Framer Motion",
+        "Parallax background layers work on scroll",
+        "Respects prefers-reduced-motion",
+        "Passes Lighthouse accessibility audit (95+)"
+      ],
+      "test_steps": [
+        "Load homepage at different times of day",
+        "Verify hero appearance matches expected phase",
+        "Test transitions manually by changing system time",
+        "Test with prefers-reduced-motion enabled",
+        "Run Lighthouse audit",
+        "Test keyboard navigation and focus states"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F002",
+      "name": "Backend Node/Hono + Prisma + PostgreSQL",
+      "description": "Replace Python FastAPI backend with Node/Hono server, Prisma ORM, and Railway PostgreSQL database with full schema for sunsets, businesses, quizzes",
+      "acceptance_criteria": [
+        "Hono server runs and responds to health check",
+        "Prisma schema includes all models (User, SunsetPhoto, Business, Quiz, etc.)",
+        "Railway Postgres is provisioned and connected",
+        "Migrations run without errors",
+        "All API endpoints return valid JSON",
+        "CORS configured for Vite dev server"
+      ],
+      "test_steps": [
+        "Start backend: npm run dev",
+        "Hit /health endpoint, expect {status: 'ok'}",
+        "Run Prisma migrations",
+        "Seed database with sample data",
+        "Test all CRUD endpoints with Postman/Insomnia",
+        "Check Railway dashboard for successful deployment"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F003",
+      "name": "Sunset Phase API Endpoint",
+      "description": "API endpoint that calculates and returns current sunset phase (day/golden/night) for Puerto Vallarta with caching",
+      "acceptance_criteria": [
+        "GET /api/sunset-phase returns correct phase for current time",
+        "Response includes: phase, sunsetTime, nextPhaseIn",
+        "Results are cached for 5 minutes",
+        "Uses Puerto Vallarta coordinates (20.6534°N, 105.2253°W)",
+        "Phase logic: day (>90min before), golden (±90min), night (>90min after)"
+      ],
+      "test_steps": [
+        "Call endpoint at different times of day",
+        "Verify phase matches expected value",
+        "Check response format and data types",
+        "Verify caching works (same result within 5 min)",
+        "Test with manual time override (if implemented)"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F004",
+      "name": "TanStack Router Migration",
+      "description": "Migrate from react-router-dom to TanStack Router with file-based routing for all pages (/, /gallery, /nightlife, /upload, /quiz, /winners, /blog)",
+      "acceptance_criteria": [
+        "All routes accessible via TanStack Router",
+        "File-based routing structure in /src/routes/",
+        "No react-router-dom dependencies remaining",
+        "All existing pages work (Index, Auth, NotFound)",
+        "New routes created: gallery, nightlife, upload, quiz, winners, blog"
+      ],
+      "test_steps": [
+        "Navigate to each route manually",
+        "Test browser back/forward buttons",
+        "Test direct URL access to deep routes",
+        "Verify 404 page for invalid routes",
+        "Check for console errors"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F005",
+      "name": "TanStack Query + Sunset Phase Hook",
+      "description": "Set up TanStack Query with hooks for sunset phase, businesses, and quiz submissions with proper caching and refetching",
+      "acceptance_criteria": [
+        "TanStack Query configured with QueryClientProvider",
+        "useSunsetPhase hook polls every 5 minutes",
+        "useBusinesses hook with filters (type, luxury, phase)",
+        "useBusiness hook for single business by slug",
+        "useQuizSubmission mutation hook",
+        "All hooks have proper error handling"
+      ],
+      "test_steps": [
+        "Import and use each hook in a test component",
+        "Verify data loads correctly",
+        "Test error states (disconnect backend)",
+        "Test loading states",
+        "Verify refetch intervals work",
+        "Check React Query DevTools"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F006",
+      "name": "Sunset Photo Upload System",
+      "description": "Full upload flow: /upload page with form, file upload to cloud storage, approval queue, display in gallery",
+      "acceptance_criteria": [
+        "/upload route with image upload, name, location, email fields",
+        "Image validation (max 5MB, jpg/png/webp only)",
+        "Upload progress indicator",
+        "Success message: 'Your sunset is in the approval queue!'",
+        "Photos stored with approved=false initially",
+        "Admin can approve photos (manual for MVP)"
+      ],
+      "test_steps": [
+        "Navigate to /upload",
+        "Upload valid image with all fields",
+        "Verify success message appears",
+        "Check database for new SunsetPhoto record",
+        "Try uploading oversized file, expect error",
+        "Try uploading invalid format, expect error"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F007",
+      "name": "Sunset Photo Gallery",
+      "description": "Public gallery at /gallery with infinite scroll, masonry grid, filters, and Motion Primitives animations",
+      "acceptance_criteria": [
+        "/gallery route displays approved photos only",
+        "Infinite scroll or pagination works smoothly",
+        "Masonry grid layout (responsive)",
+        "Filters: Date range, Location, Contest",
+        "Each photo card shows: image, name, location, date",
+        "Stagger animation on scroll (Framer Motion)",
+        "Hover effects: lift + shadow + scale"
+      ],
+      "test_steps": [
+        "Navigate to /gallery",
+        "Scroll to load more photos (infinite scroll)",
+        "Apply filters, verify results update",
+        "Hover over cards, verify animation works",
+        "Test on mobile (touch interactions)",
+        "Check for lazy loading (network tab)"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F008",
+      "name": "Business Directory Backend & API",
+      "description": "CRUD API for Business entities with phase-aware sorting, luxury scoring, and detail endpoints",
+      "acceptance_criteria": [
+        "GET /api/businesses with filters (type, luxuryScore, phase)",
+        "GET /api/businesses/:slug for single business",
+        "POST /api/businesses for admin (auth can defer)",
+        "Database seeded with 15+ sample businesses",
+        "Phase-relevance scoring logic implemented",
+        "Returns business features (rooftop_view, etc.)"
+      ],
+      "test_steps": [
+        "Fetch all businesses, verify list returned",
+        "Filter by type=BAR, verify only bars returned",
+        "Fetch business by slug, verify detail data",
+        "Test phase-relevance sorting at different times",
+        "Create new business via POST (if auth enabled)"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F009",
+      "name": "Nightlife Directory Listing Page",
+      "description": "Frontend /nightlife route with filterable business cards, phase-aware sorting, and Code UI styling",
+      "acceptance_criteria": [
+        "/nightlife route displays business listings",
+        "Filters: Type, Price Tier, Sunset Timing",
+        "Each card: image, name, luxury score, best time, CTA",
+        "Sorted by luxuryScore + phase-relevance",
+        "Motion UI: hover lift, animated filters",
+        "Mobile-responsive with touch-friendly controls"
+      ],
+      "test_steps": [
+        "Navigate to /nightlife",
+        "Verify businesses load",
+        "Apply filters, verify results update",
+        "Test sorting changes based on time of day",
+        "Hover over cards, verify motion effects",
+        "Test on mobile device"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F010",
+      "name": "Business Detail Pages",
+      "description": "Detail page at /business/:slug with full info, features inspector, map, booking CTAs, and Motion Primitives",
+      "acceptance_criteria": [
+        "/business/:slug route loads business data",
+        "Layout: hero image, name, description, features, map",
+        "Features displayed as JSON-like inspector (Code UI)",
+        "Map embed (Google Maps or Mapbox)",
+        "CTAs: 'Book Now', 'Get Directions', 'Save'",
+        "Nearby sunset photo spots section",
+        "Parallax hero image on scroll"
+      ],
+      "test_steps": [
+        "Navigate to /business/test-slug",
+        "Verify all data loads correctly",
+        "Click features to expand/collapse",
+        "Click 'Book Now', verify external link opens",
+        "Test map interaction",
+        "Scroll and verify parallax effect"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F011",
+      "name": "Scorecard Quiz System",
+      "description": "15-question quiz with contact capture, segment calculation, dynamic results, and A/B testing support",
+      "acceptance_criteria": [
+        "/quiz route with multi-step form (15 steps)",
+        "Progress bar updates correctly",
+        "Step 1: Contact capture (name, email, phone optional)",
+        "Steps 2-11: 10 best-practice questions",
+        "Steps 12-16: 5 big sales questions",
+        "Form saves progress to localStorage",
+        "Results page: Big Reveal, 3 Insights, Top 3 Recommendations",
+        "Backend calculates segment and recommendations"
+      ],
+      "test_steps": [
+        "Navigate to /quiz",
+        "Complete all 15 steps",
+        "Verify progress bar accuracy",
+        "Test form validation (try skipping required fields)",
+        "Submit and verify results page loads",
+        "Close tab mid-quiz, reopen, verify resume works",
+        "Check database for QuizSubmission record"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F012",
+      "name": "Blog Engine with Strapi/Markdown",
+      "description": "Blog system with listing, detail pages, and 6-7 months of backdated content with Motion UI",
+      "acceptance_criteria": [
+        "/blog route displays post listings",
+        "/blog/:slug route displays full post",
+        "6-7 posts backdated (June-Dec 2025)",
+        "Each post: title, excerpt, image, category, date",
+        "Post detail: hero image, content (Markdown), TOC, progress bar",
+        "Motion UI: scroll reveals, reading progress",
+        "SEO: meta tags, slugs, internal linking"
+      ],
+      "test_steps": [
+        "Navigate to /blog",
+        "Verify all posts load",
+        "Click a post, verify detail page loads",
+        "Test reading progress bar",
+        "Check SEO meta tags in browser DevTools",
+        "Test on mobile",
+        "Run Lighthouse SEO audit"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F013",
+      "name": "Contest & Winners System",
+      "description": "Contest management backend and /winners frontend to display contest leaderboards and prize info",
+      "acceptance_criteria": [
+        "Contest model with name, dates, prize, isActive",
+        "ContestEntry links SunsetPhotos to Contests",
+        "/winners route displays active contests",
+        "Top 3 entries per contest shown with ranking",
+        "Winner badge/trophy icon",
+        "Prize description displayed"
+      ],
+      "test_steps": [
+        "Create test contest in database",
+        "Link 5 photos to contest with ranks",
+        "Navigate to /winners",
+        "Verify contest displays with top 3",
+        "Check winner styling (badge, etc.)"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F014",
+      "name": "Motion Primitives Integration",
+      "description": "Install and integrate Framer Motion + Motion Primitives across all key components with accessibility support",
+      "acceptance_criteria": [
+        "Framer Motion installed",
+        "Parallax layers on hero",
+        "Scroll-linked reveals on sections",
+        "Stagger animations on card grids",
+        "Hover effects: lift, shadow, scale",
+        "All motion respects prefers-reduced-motion",
+        "No jank or layout shift"
+      ],
+      "test_steps": [
+        "Enable prefers-reduced-motion, verify motion stops",
+        "Scroll homepage, verify section reveals",
+        "Hover over cards, verify smooth animations",
+        "Test on low-powered device (check FPS)",
+        "Run Lighthouse performance audit"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F015",
+      "name": "Accessibility Improvements",
+      "description": "Skip-to-content link, enhanced focus states, ARIA labels, keyboard navigation, and screen reader testing",
+      "acceptance_criteria": [
+        "Skip-to-content link at top (visually hidden)",
+        "Focus states: ocean-400 outline, 2px offset",
+        "All interactive elements keyboard-accessible",
+        "ARIA labels on video, images, buttons",
+        "Color contrast meets AA standard (4.5:1)",
+        "Passes WAVE or axe DevTools audit"
+      ],
+      "test_steps": [
+        "Navigate entire site with keyboard only",
+        "Test with screen reader (NVDA or VoiceOver)",
+        "Run axe DevTools audit, fix all issues",
+        "Check focus visibility on all interactive elements",
+        "Run Lighthouse accessibility audit (target: 95+)"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F016",
+      "name": "Image Optimization & Lazy Loading",
+      "description": "Optimize all images with Cloudinary/imgix, implement lazy loading, LQIP blur-up effect",
+      "acceptance_criteria": [
+        "All images use optimized URLs (Cloudinary/imgix)",
+        "Images below fold have loading='lazy'",
+        "LQIP placeholders for blur-up effect",
+        "Hero video conditionally loads on fast connections",
+        "Bundle size <500KB initial load"
+      ],
+      "test_steps": [
+        "Open DevTools Network tab",
+        "Verify images load only when scrolled into view",
+        "Check image file sizes (should be <200KB each)",
+        "Test on slow 3G connection",
+        "Run Lighthouse performance audit"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F017",
+      "name": "Playwright E2E Tests",
+      "description": "Write and execute Playwright tests for all critical user flows",
+      "acceptance_criteria": [
+        "Test: Homepage loads, hero displays correct phase",
+        "Test: Upload flow (form submit, success message)",
+        "Test: Gallery loads photos, infinite scroll works",
+        "Test: Quiz flow (all 15 steps, results page)",
+        "Test: Directory listing + detail page navigation",
+        "Test: Blog listing + post detail",
+        "All tests pass in CI"
+      ],
+      "test_steps": [
+        "Run: npx playwright test",
+        "Verify all tests pass",
+        "Generate HTML report",
+        "Review any flaky tests and fix",
+        "Run tests in CI pipeline (GitHub Actions)"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F018",
+      "name": "Lighthouse Audits & Optimization",
+      "description": "Run Lighthouse audits on all key pages and fix issues to meet target scores",
+      "acceptance_criteria": [
+        "Performance: 90+ on all pages",
+        "Accessibility: 95+ on all pages",
+        "Best Practices: 95+ on all pages",
+        "SEO: 90+ on all pages",
+        "All audits documented in SELF_AUDIT_REPORT.json"
+      ],
+      "test_steps": [
+        "Run Lighthouse on: /, /gallery, /nightlife, /quiz, /blog/post",
+        "Document scores before optimization",
+        "Apply fixes (image optimization, a11y, etc.)",
+        "Re-run audits, verify scores meet targets",
+        "Generate JSON report"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F019",
+      "name": "Docker + Railway Deployment",
+      "description": "Create Docker multi-stage builds and deploy backend + frontend to Railway with Postgres",
+      "acceptance_criteria": [
+        "Dockerfile for backend (Node/Hono)",
+        "Dockerfile for frontend (Nginx static)",
+        ".dockerignore excludes unnecessary files",
+        "Railway Postgres provisioned and connected",
+        "Backend deployed to Railway",
+        "Frontend deployed to Railway or Vercel",
+        "All environment variables set securely",
+        "Production URLs work with no errors"
+      ],
+      "test_steps": [
+        "Build Docker images locally",
+        "Test containers locally with docker-compose",
+        "Deploy backend to Railway",
+        "Deploy frontend to Railway or Vercel",
+        "Test production URLs",
+        "Verify database migrations ran",
+        "Check Railway logs for errors"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    },
+    {
+      "id": "F020",
+      "name": "Documentation & README",
+      "description": "Update README with deployment buttons, setup instructions, feature list, and screenshots",
+      "acceptance_criteria": [
+        "README includes project description",
+        "Railway deploy button added",
+        "Vercel deploy button added",
+        "Local setup instructions (npm install, env setup)",
+        "Environment variable guide",
+        "Feature list with screenshots",
+        "Admin guide (approve photos, manage contests)"
+      ],
+      "test_steps": [
+        "Follow README setup instructions on fresh machine",
+        "Verify all steps work",
+        "Test deploy buttons",
+        "Review for clarity and completeness",
+        "Get feedback from another developer"
+      ],
+      "status": "not-started",
+      "tested": false,
+      "committed": false,
+      "started_at": null,
+      "completed_at": null,
+      "blocked_reason": null
+    }
+  ],
+  "metadata": {
+    "project_name": "Vallarta Voyage Living Sunset Engine",
+    "created_at": "2025-12-07T00:00:00Z",
+    "total_features": 20,
+    "completed_features": 0,
+    "completion_percentage": 0,
+    "estimated_days": 14,
+    "current_phase": "Phase 0: Discovery & Audit",
+    "next_phase": "Phase 1: Architecture & Backend Scaffold"
+  }
+}

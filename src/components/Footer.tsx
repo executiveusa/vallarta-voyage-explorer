@@ -11,10 +11,10 @@ const Footer = () => {
           {/* Column 1 - Company */}
           <div>
             <h3 className="text-2xl font-bold mb-6">
-              <span className="text-ocean-400">VISIT</span> VALLARTA
+              <span className="text-ocean-400">SUNSET</span> VALLARTA
             </h3>
             <p className="text-gray-400 mb-6">
-              Curated experiences and unforgettable adventures in Puerto Vallarta, Mexico.
+              Private sunsets, hidden streets, and curated Vallarta experiences.
             </p>
             <div className="flex space-x-4">
               <a 
@@ -111,7 +111,7 @@ const Footer = () => {
         {/* Bottom section */}
         <div className="pt-10 border-t border-gray-800 text-center md:text-left md:flex md:justify-between text-gray-500 text-sm">
           <div>
-            <p>© {currentYear} Visit Vallarta. All rights reserved.</p>
+            <p>© {currentYear} Sunset Vallarta. All rights reserved.</p>
             <p className="mt-1 text-ocean-400 font-medium">Hosted by Effrian</p>
           </div>
           <div className="mt-4 md:mt-0 space-x-6">

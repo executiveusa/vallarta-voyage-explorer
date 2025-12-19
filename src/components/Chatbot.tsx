@@ -69,7 +69,7 @@ const Chatbot = () => {
           <div className="bg-gradient-to-r from-ocean-600 to-ocean-700 text-white px-4 py-4 flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-yellow-300" />
-              <h3 className="font-semibold">Ask me about Puerto Vallarta! ✨</h3>
+              <h3 className="font-semibold">Sunset Vallarta concierge ✨</h3>
             </div>
             <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:bg-ocean-700/50 h-8 w-8 p-0">
               <X className="h-5 w-5" />
@@ -79,7 +79,7 @@ const Chatbot = () => {
           <div className="flex-1 p-4 overflow-y-auto h-80 bg-slate-50">
             {messages.length === 0 ? (
               <div className="text-center text-gray-500 mt-10 p-6 bg-white rounded-lg border border-gray-100 shadow-sm">
-                <p className="font-medium mb-2">Welcome to Visit Vallarta!</p>
+                <p className="font-medium mb-2">Welcome to Sunset Vallarta!</p>
                 <p>I can help with tours, accommodations, local tips, and more. What would you like to know about Puerto Vallarta?</p>
               </div>
             ) : (

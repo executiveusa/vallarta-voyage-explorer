@@ -23,13 +23,13 @@ const ToursSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16 animate-fade-up">
           <span className="text-sm font-medium text-ocean-600 tracking-wide uppercase">
-            Curated Experiences
+            Sunset Vallarta Originals
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4 text-gray-900">
-            Unforgettable Adventures
+            Private Sunsets & Hidden Routes
           </h2>
           <p className="max-w-2xl mx-auto text-gray-600">
-            Discover our handpicked selection of extraordinary tours and activities that showcase the best of Puerto Vallarta.
+            Discover our handpicked selection of extraordinary tours and activities that showcase the best of Puerto Vallarta's hidden gems.
           </p>
         </div>
 

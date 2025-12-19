@@ -65,9 +65,9 @@ const BookingSection = () => {
               className="w-full h-full object-cover"
             />
             <div className="absolute left-8 bottom-8 z-20 text-white">
-              <h3 className="text-3xl font-bold mb-2">Personalized Experiences</h3>
+              <h3 className="text-3xl font-bold mb-2">Your Private Concierge</h3>
               <p className="max-w-sm text-white/80">
-                Contact us for custom tours and special requests. We're here to create your perfect vacation.
+                Contact us for custom sunset itineraries and special requests. We're here to create your perfect vacation.
               </p>
             </div>
           </div>
@@ -76,13 +76,13 @@ const BookingSection = () => {
           <div>
             <div className="mb-10">
               <span className="text-sm font-medium text-ocean-600 tracking-wide uppercase">
-                Book Your Experience
+                Start Your Journey
               </span>
               <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4 text-gray-900">
                 Ready for an adventure?
               </h2>
               <p className="text-gray-600">
-                Fill out the form below, and we'll help you plan your perfect Puerto Vallarta experience.
+                Fill out the form below, and we'll help you plan your perfect Puerto Vallarta sunset experience.
               </p>
             </div>
 

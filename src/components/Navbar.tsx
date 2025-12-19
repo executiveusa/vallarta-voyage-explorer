@@ -41,12 +41,23 @@ export const Navbar = () => {
           to="/" 
           className="text-2xl font-bold text-ocean-800 tracking-tight relative z-10"
         >
-          <span className="text-ocean-600">VISIT</span> VALLARTA
+          <span className="text-ocean-600">SUNSET</span> VALLARTA
         </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
           <ul className="flex space-x-8">
+            <li>
+              <Link
+                to="/directory"
+                className={cn(
+                  "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
+                  isScrolled ? "text-gray-800" : "text-gray-900"
+                )}
+              >
+                Directory
+              </Link>
+            </li>
             {["Tours", "About", "Destinations", "Gallery"].map((item) => (
               <li key={item}>
                 <a
@@ -85,6 +96,15 @@ export const Navbar = () => {
           )}
         >
           <ul className="flex flex-col space-y-6">
+            <li>
+              <Link
+                to="/directory"
+                className="text-xl font-medium text-gray-800 hover:text-ocean-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Directory
+              </Link>
+            </li>
             {["Tours", "About", "Destinations", "Gallery"].map((item) => (
               <li key={item}>
                 <a
