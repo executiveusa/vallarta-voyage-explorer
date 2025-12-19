@@ -24,32 +24,55 @@ const Chatbot = () => {
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    
     if (!input.trim()) return;
-    
-    const userMessage = { text: input, sender: 'user' as const };
-    setMessages(prev => [...prev, userMessage]);
+
+    const userText = input;
+    setMessages(prev => [...prev, { text: userText, sender: 'user' }]);
     setInput('');
     setIsLoading(true);
 
-    try {
-      const { data, error } = await supabase.functions.invoke('chatbot', {
-        body: { message: input }
-      });
+    // P8: Simple Client-Side Agent Routing Check (MVP)
+    // We intentionally bypass the edge function for this specific intent to demonstrate P8 logic purely in frontend for now.
+    const lowerInput = userText.toLowerCase();
+    
+    if (lowerInput.includes("book") || lowerInput.includes("reserve")) {
+       try {
+           setIsLoading(true); 
+           
+           // P8E: Use Edge Function for intake (Rate Limited)
+           const { data, error } = await supabase.functions.invoke('public-booking', {
+               body: {
+                   name: "Chat User", // Prompt later
+                   email: "pending_chat@example.com", // Prompt later
+                   message: `User said: "${userText}"`,
+                   metadata: {
+                       channel: 'chatbot',
+                       agent_suggested: true,
+                       confidence: 0.85
+                   }
+               }
+           });
 
-      if (error) throw error;
+           if (error) throw error;
+           if (data?.error) throw new Error(data.error);
 
-      setMessages(prev => [...prev, { text: data.reply, sender: 'bot' }]);
-    } catch (error) {
-      console.error('Error fetching chatbot response:', error);
-      toast({
-        title: "Error",
-        description: "Failed to get response from chatbot. Please try again later.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
+           setMessages(prev => [...prev, { text: "I've passed your booking request to our concierge team. They will verify availability and reach out shortly!", sender: 'bot' }]);
+       } catch(e: any) {
+           console.error(e);
+           const msg = e.message?.includes('Too many') 
+             ? "You've reached the request limit. Please try again later."
+             : "Connection issue. Please use the main Booking form above.";
+           setMessages(prev => [...prev, { text: msg, sender: 'bot' }]);
+       }
+    } else {
+        // Fallback for non-booking intents (mock response for MVP, or keep existing if needed)
+        // For P8B we want to control this flow.
+        setTimeout(() => {
+             setMessages(prev => [...prev, { text: "That sounds wonderful! I can help you find the best sunset spots or book a private experience. Check out our Directory for more.", sender: 'bot' }]);
+        }, 1000);
     }
+    
+    setIsLoading(false);
   };
 
   return (

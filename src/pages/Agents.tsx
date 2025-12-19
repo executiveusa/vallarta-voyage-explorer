@@ -48,6 +48,15 @@ const Agents = () => {
             </div>
 
             <div className="border border-gray-200 rounded-lg p-5">
+              <h3 className="text-lg font-semibold mb-2">Agent Booking Protocol</h3>
+            <ul className="list-disc pl-5 space-y-1 text-gray-600">
+                <li>Create intents, not reservations.</li>
+                <li>Public endpoints (Chatbot) generate Human intents w/ metadata.</li>
+                <li>Agent-Origin intents are restricted to verified internal partners.</li>
+            </ul>
+          </div>
+
+            <div className="border border-gray-200 rounded-lg p-5">
               <h3 className="font-bold text-lg mb-2">Listing</h3>
               <ul className="text-sm space-y-1 text-gray-600">
                 <li><code>id</code>: UUID</li>

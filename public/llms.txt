@@ -19,6 +19,12 @@
   - Fields: name, email, message, date
   - Context: "Concierge" role handoff
 
+### Agent Booking Rules
+- The Chatbot and website do not create agent bookings.
+- They collect user intent and may include AI-suggested context.
+- All confirmations are handled by a human concierge.
+- Agents must not fabricate prices or availability.
+
 ## Navigation
 
 - Home: /

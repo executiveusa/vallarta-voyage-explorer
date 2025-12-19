@@ -51,38 +51,31 @@ const BookingSection = () => {
     
     // 2. Insert into Supabase
     try {
-      const { error } = await supabase
-        .from('booking_intents')
-        .insert({
-          name: formData.name,
-          contact_email: formData.email,
-          phone: formData.phone,
-          date: formData.date ? new Date(formData.date) : null,
-          guests: formData.guests ? parseInt(formData.guests) : null,
-          message: formData.message,
-          source_path: location.pathname + location.hash,
-          source_type: 'concierge_form',
-          attributed_listing_id: attributedListingId || null // Capture attribution
-        });
-
-      if (error) throw error;
-
-      toast.success("Your booking request has been sent! We'll contact you soon.");
-      
-      // Reset form
-      setFormData({
-        name: "",
-        email: user?.email || "",
-        phone: "",
-        date: "",
-        guests: "",
-        message: "",
-        company_website: ""
+      const { data, error } = await supabase.functions.invoke('public-booking', {
+        body: {
+            ...formData,
+            source_path: window.location.pathname,
+            metadata: {
+               channel: 'form',
+               agent_suggested: false
+            },
+             // Honeypot handled in body automatically if mapped or we pass explicit
+            honeypot: (e.target as any).company_website?.value 
+        }
       });
 
-    } catch (error) {
-      console.error('Booking submission error:', error);
-      toast.error("There was a problem sending your request. Please try again.");
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+
+      toast.success("Request received! Our concierge will contact you shortly.");
+      setFormData({ name: "", email: "", date: "", guests: "2", message: "" });
+      
+    } catch (error: any) {
+      console.error("Booking error:", error);
+      const msg = error.message?.includes('Too many') 
+         ? "Request limit reached. Please try later." 
+         : "Failed to submit request. Please try again.";
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }

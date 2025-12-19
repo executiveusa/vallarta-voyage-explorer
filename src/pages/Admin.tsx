@@ -175,6 +175,8 @@ const AdminPanel = () => {
                     <TableRow>
                         <TableHead>Date</TableHead>
                         <TableHead>Client</TableHead>
+                        <TableHead>Origin</TableHead>
+                        <TableHead>Confidence</TableHead>
                         <TableHead>Request</TableHead>
                         <TableHead>Attribution</TableHead>
                         <TableHead>Status</TableHead>
@@ -182,13 +184,21 @@ const AdminPanel = () => {
                 </TableHeader>
                 <TableBody>
                     {bookings.map(booking => (
-                        <TableRow key={booking.id}>
+                        <TableRow key={booking.id} className={booking.status === 'needs_clarification' ? 'bg-red-50' : ''}>
                             <TableCell>{new Date(booking.created_at).toLocaleDateString()}</TableCell>
                             <TableCell>
                                 <div>{booking.name}</div>
                                 <div className="text-xs text-gray-400">{booking.contact_email}</div>
                             </TableCell>
-                            <TableCell className="max-w-xs">{booking.message}</TableCell>
+                            <TableCell className="capitalize text-xs">{booking.origin || 'human'}</TableCell>
+                            <TableCell>
+                                {booking.confidence ? (
+                                    <span className={`text-xs font-bold ${booking.confidence < 0.7 ? 'text-red-500' : 'text-green-600'}`}>
+                                        {(booking.confidence * 100).toFixed(0)}%
+                                    </span>
+                                ) : '-'}
+                            </TableCell>
+                            <TableCell className="max-w-xs truncate" title={booking.message}>{booking.message}</TableCell>
                             <TableCell className="text-xs font-mono">{booking.source_path}</TableCell>
                             <TableCell>
                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
