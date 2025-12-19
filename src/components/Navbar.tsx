@@ -58,6 +58,17 @@ export const Navbar = () => {
                 Directory
               </Link>
             </li>
+            <li>
+              <Link
+                to="/sunsets"
+                className={cn(
+                  "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
+                  isScrolled ? "text-gray-800" : "text-gray-900"
+                )}
+              >
+                Tracker
+              </Link>
+            </li>
             {["Tours", "About", "Destinations", "Gallery"].map((item) => (
               <li key={item}>
                 <a
@@ -103,6 +114,15 @@ export const Navbar = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Directory
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/sunsets"
+                className="text-xl font-medium text-gray-800 hover:text-ocean-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Tracker
               </Link>
             </li>
             {["Tours", "About", "Destinations", "Gallery"].map((item) => (

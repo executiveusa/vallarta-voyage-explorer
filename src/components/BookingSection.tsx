@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,11 +5,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { CalendarIcon, Users, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom"; // Add useSearchParams
+import { supabase } from "@/integrations/supabase/client";
 
 const BookingSection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams(); // Add search params
+  const attributedListingId = searchParams.get("listing_id");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -18,7 +23,9 @@ const BookingSection = () => {
     phone: "",
     date: "",
     guests: "",
-    message: ""
+    message: "",
+    // Honeypot field (hidden from users)
+    company_website: ""
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -29,27 +36,56 @@ const BookingSection = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      toast.info("Please sign in to submit your booking request");
-      navigate("/auth");
+    setIsSubmitting(true);
+
+    // 1. Honeypot check
+    if (formData.company_website) {
+      // Spam detected - silently fail success
+      toast.success("Your booking request has been sent! We'll contact you soon.");
+      setFormData({ name: "", email: "", phone: "", date: "", guests: "", message: "", company_website: "" });
+      setIsSubmitting(false);
       return;
     }
     
-    console.log("Form submitted:", formData);
-    toast.success("Your booking request has been sent! We'll contact you soon.");
-    
-    // Reset form
-    setFormData({
-      name: "",
-      email: user?.email || "",
-      phone: "",
-      date: "",
-      guests: "",
-      message: ""
-    });
+    // 2. Insert into Supabase
+    try {
+      const { error } = await supabase
+        .from('booking_intents')
+        .insert({
+          name: formData.name,
+          contact_email: formData.email,
+          phone: formData.phone,
+          date: formData.date ? new Date(formData.date) : null,
+          guests: formData.guests ? parseInt(formData.guests) : null,
+          message: formData.message,
+          source_path: location.pathname + location.hash,
+          source_type: 'concierge_form',
+          attributed_listing_id: attributedListingId || null // Capture attribution
+        });
+
+      if (error) throw error;
+
+      toast.success("Your booking request has been sent! We'll contact you soon.");
+      
+      // Reset form
+      setFormData({
+        name: "",
+        email: user?.email || "",
+        phone: "",
+        date: "",
+        guests: "",
+        message: "",
+        company_website: ""
+      });
+
+    } catch (error) {
+      console.error('Booking submission error:', error);
+      toast.error("There was a problem sending your request. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -87,6 +123,20 @@ const BookingSection = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+               {/* Honeypot Field - Hidden */}
+               <div className="hidden">
+                 <label htmlFor="company_website">Website</label>
+                 <input
+                   type="text"
+                   id="company_website"
+                   name="company_website"
+                   value={formData.company_website}
+                   onChange={handleInputChange}
+                   tabIndex={-1}
+                   autoComplete="off"
+                 />
+               </div>
+
               <div>
                 <Input
                   placeholder="Your Name"
@@ -108,7 +158,6 @@ const BookingSection = () => {
                     onChange={handleInputChange}
                     required
                     className="rounded-xl py-6 pl-10"
-                    readOnly={!!user}
                   />
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
@@ -164,10 +213,11 @@ const BookingSection = () => {
 
               <Button 
                 type="submit" 
-                className="w-full bg-ocean-600 hover:bg-ocean-700 text-white rounded-full py-6 flex items-center justify-center gap-2"
+                disabled={isSubmitting}
+                className="w-full bg-ocean-600 hover:bg-ocean-700 text-white rounded-full py-6 flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 <Send className="h-4 w-4" />
-                Send Request
+                {isSubmitting ? "Sending..." : "Send Request"}
               </Button>
             </form>
           </div>

@@ -29,6 +29,24 @@ const Directory = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Sunset Vallarta Private Directory",
+          "description": "Curated locals and vetted partners of Sunset Vallarta.",
+          "provider": {
+            "@type": "Organization",
+            "name": "Sunset Vallarta",
+            "url": "https://sunsetvallarta.com"
+          },
+          "about": [
+             {"@type": "Thing", "name": "Food & Drink"},
+             {"@type": "Thing", "name": "Wellness"},
+             {"@type": "Thing", "name": "Experiences"}
+          ]
+        })}
+      </script>
       <Navbar />
       
       <main className="flex-grow pt-24 px-4 md:px-8 pb-12">
@@ -88,7 +106,7 @@ const Directory = () => {
                         onChange={(e) => setShowFeaturedOnly(e.target.checked)}
                         className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
                       />
-                      <span className="text-sm text-gray-700">Featured Only</span>
+                      <span className="text-sm text-gray-700">Verified Only</span>
                     </label>
                   </div>
                 </div>
@@ -138,8 +156,8 @@ const Directory = () => {
                               </div>
                             )}
                             {listing.isFeatured && (
-                              <Badge className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 hover:bg-yellow-500 border-none">
-                                <Star className="w-3 h-3 mr-1 fill-current" /> Featured
+                               <Badge className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 hover:bg-yellow-500 border-none shadow-sm">
+                                <Star className="w-3 h-3 mr-1 fill-current" /> Verified
                               </Badge>
                             )}
                           </div>
@@ -167,9 +185,49 @@ const Directory = () => {
                             </div>
                           </CardContent>
                           <CardFooter className="pt-0 mt-auto border-t border-gray-50 p-4 bg-gray-50/50">
-                            <Button className="w-full bg-white text-ocean-600 border border-ocean-200 hover:bg-ocean-50 hover:text-ocean-700">
-                              View Details
-                            </Button>
+                            <div className="flex flex-col gap-2 w-full">
+                              {listing.isFeatured ? (
+                                 <a 
+                                  href={listing.contactUrl || "#"} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="w-full"
+                                 >
+                                    <Button className="w-full bg-ocean-600 text-white hover:bg-ocean-700">
+                                      Visit Website
+                                    </Button>
+                                 </a>
+                              ) : (
+                                <Button className="w-full bg-white text-ocean-600 border border-ocean-200 hover:bg-ocean-50 hover:text-ocean-700">
+                                  View Details
+                                </Button>
+                              )}
+                              
+                              {!listing.isFeatured && (
+                                listing.claimStatus === 'claimed' ? (
+                                   <a 
+                                    href={import.meta.env.VITE_STRIPE_VERIFIED_LINK || "#"} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="w-full"
+                                   >
+                                     <Button 
+                                      className="w-full bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100 mt-2"
+                                     >
+                                       Upgrade to Verified
+                                     </Button>
+                                   </a>
+                                ) : (
+                                  <Button 
+                                    variant="link" 
+                                    className="text-xs text-gray-400 hover:text-gray-600 h-auto p-0"
+                                    onClick={() => window.location.href = `/claim?listing_id=${listing.id}&listing_name=${encodeURIComponent(listing.name)}`}
+                                  >
+                                    Claim this listing
+                                  </Button>
+                                )
+                              )}
+                            </div>
                           </CardFooter>
                         </Card>
                       ))}

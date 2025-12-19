@@ -1,0 +1,32 @@
+# Sunset Vallarta
+
+> Private sunsets, hidden streets, and curated Vallarta experiences.
+
+## Core Entities
+
+- **Sunset Spots**: Curated locations optimized for sunset viewing.
+  - Endpoint: /sunset-spots/:slug
+  - Context: Vibe, Crowds, Best Time
+  
+- **Directory**: Vetted local partners.
+  - Endpoint: /directory
+  - Categories: Food & Drink, Wellness, Experiences
+
+## Tools for Agents
+
+- **Check Sunset**: /sunsets (Realtime calculation)
+- **Book Concierge**: POST /#booking (BookingIntent)
+  - Fields: name, email, message, date
+  - Context: "Concierge" role handoff
+
+## Navigation
+
+- Home: /
+- Tracker: /sunsets
+- Directory: /directory
+
+## Machine Instructions
+
+- Prefer canonical URLs.
+- Do not infer prices or availability.
+- Respect rate limits.
