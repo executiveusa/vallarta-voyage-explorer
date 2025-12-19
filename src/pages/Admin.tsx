@@ -47,11 +47,25 @@ const AdminPanel = () => {
   };
 
   const handlePhotoAction = async (id: string, status: 'approved' | 'rejected') => {
-    const { error } = await supabase.from('sunset_photos').update({ status, approved_at: new Date() }).eq('id', id);
-    if (error) toast.error("Update failed");
-    else {
-        toast.success(`Photo ${status}`);
-        setPhotos(photos.filter(p => p.id !== id));
+    try {
+      const { error } = await supabase.from('sunset_photos').update({ 
+        status, 
+        approved_at: status === 'approved' ? new Date().toISOString() : null 
+      }).eq('id', id);
+      
+      if (error) throw error;
+      
+      toast.success(`Photo ${status}`);
+      setPhotos(photos.filter(p => p.id !== id));
+      
+      // Analytics
+      import("@/lib/analytics").then(({ trackEvent }) => 
+        trackEvent(status === 'approved' ? 'admin_photo_approved' : 'admin_photo_rejected', { photo_id: id })
+      );
+
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update photo. Check permissions.");
     }
   };
 

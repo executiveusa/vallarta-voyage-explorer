@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ApprovedFeed } from "@/components/ApprovedFeed";
 import { Share2, Clock, MapPin, Users, ArrowRight } from "lucide-react";
+import { CanonicalTag } from "@/lib/canonical";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -122,7 +123,8 @@ const Sunsets = () => {
       <main>
         {/* Full-width Hero */}
         <section className="relative h-[60vh] min-h-[400px] flex items-center justify-center text-white overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-purple-600 to-indigo-900 z-0 animate-gradient-x bg-[length:200%_200%]"></div>
+      <CanonicalTag />
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-purple-600 to-indigo-900 z-0 animate-gradient-x bg-[length:200%_200%]"></div>
           <div className="absolute inset-0 bg-black/20 z-10"></div>
           
           <div className="relative z-20 text-center px-4 max-w-4xl mx-auto mt-12">

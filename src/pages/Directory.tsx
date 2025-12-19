@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Badge } from "@/components/ui/badge";
 import { Search, MapPin, Star, Filter } from "lucide-react";
 import { useDirectoryListings } from "@/hooks/useDirectoryListings";
+import { CanonicalTag } from "@/lib/canonical";
 
 const Directory = () => {
   const { listings, loading } = useDirectoryListings();
@@ -29,6 +30,7 @@ const Directory = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <CanonicalTag />
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",

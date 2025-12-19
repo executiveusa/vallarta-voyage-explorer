@@ -3,8 +3,11 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Chatbot from "@/components/Chatbot";
+import { ApprovedFeed } from "@/components/ApprovedFeed";
 import { useSunsetSpots } from "@/hooks/useSunsetSpots";
 import { useDirectoryListings } from "@/hooks/useDirectoryListings";
+import { useShareCard } from "@/hooks/useShareCard";
+import { CanonicalTag } from "@/lib/canonical";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,6 +47,7 @@ const SunsetSpotDetail = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <CanonicalTag />
       <script type="application/ld+json">
         {JSON.stringify({
           "@context": "https://schema.org",

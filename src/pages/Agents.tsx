@@ -1,9 +1,13 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { CanonicalTag } from "@/lib/canonical";
 
 const Agents = () => {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white min-h-screen font-mono text-sm leading-relaxed text-gray-800">
+      <CanonicalTag />
       <Navbar />
       
       <main className="pt-24 px-6 md:px-12 max-w-4xl mx-auto mb-20">

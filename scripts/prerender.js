@@ -2,6 +2,8 @@ import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { spawn } from 'child_process';
+import net from 'net';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const distDir = path.resolve(__dirname, '../dist');
@@ -21,82 +23,124 @@ const routes = [
   '/sunset-spots/yelapa-main-beach'
 ];
 
-const PORT = 4173; // Default Vite preview port
+const PORT = 4173; 
 const BASE_URL = `http://localhost:${PORT}`;
 
-async function prerender() {
-  console.log('Starting prerender...');
-  
-  if (!fs.existsSync(distDir)) {
-    console.error('Dist directory not found. Run "npm run build" first.');
-    process.exit(1);
+const checkPort = (port) => {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(100);
+    socket.on('connect', () => {
+      socket.destroy();
+      resolve(true);
+    });
+    socket.on('timeout', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    socket.on('error', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    socket.connect(port, 'localhost');
+  });
+};
+
+const waitForServer = async (port, timeout = 30000) => {
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeout) {
+    if (await checkPort(port)) {
+      return true;
+    }
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
+  return false;
+};
 
-  const browser = await puppeteer.launch({ headless: 'new' });
-  const page = await browser.newPage();
+async function prerender() {
+  console.log('Starting hardened prerender...');
 
-  for (const route of routes) {
-    try {
-      console.log(`Prerendering: ${route}`);
-      await page.goto(`${BASE_URL}${route}`, { waitUntil: 'networkidle0' });
+  // 1. Run Vite Preview in child process
+  console.log('Spawning static server...');
+  const server = spawn('npm', ['run', 'preview', '--', '--port', PORT.toString()], {
+    cwd: path.resolve(__dirname, '..'),
+    shell: true,
+    stdio: 'inherit' // Pipe output to see server logs
+  });
 
-      // Clean up scripts that might cause hydration mismatches if possible, 
-      // or just capture full HTML. 
-      // For MVP, capturing outerHTML is sufficient.
-      
-      const content = await page.content();
-      
-      // Determine file path
-      let filePath;
-      if (route === '/') {
-        filePath = path.join(distDir, 'index.html'); // Don't overwrite index? 
-        // Actually for SPA, we usually keep index.html as the app shell.
-        // But for prerendering, we want crawlers to see content.
-        // A common pattern is creating specialized files or relying on server to serve specific HTML for bots.
-        // For static hosting (Netlify/Vercel/S3), we create folder/index.html structure.
+  try {
+    // 2. Wait for port readiness
+    console.log('Waiting for server...');
+    const ready = await waitForServer(PORT);
+    if (!ready) {
+      throw new Error(`Server failed to start on port ${PORT}`);
+    }
+    console.log('Server open.');
+
+    // 3. Launch Puppeteer
+    const browser = await puppeteer.launch({ 
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox'] // CI safety
+    });
+    const page = await browser.newPage();
+
+    for (const route of routes) {
+      try {
+        console.log(`Prerendering: ${route}`);
+        await page.goto(`${BASE_URL}${route}`, { waitUntil: 'networkidle0', timeout: 30000 });
+
+        const content = await page.content();
         
-        // Skip root index.html overwrite to avoid breaking SPA fallback if configured poorly, 
-        // unless we know the server serves sub-paths correctly. 
-        // Let's create 'index_prerender.html' for root? No, usually we want exact paths.
-        // For sub-routes, we create directory structure.
-        
-        // NOTE: For '/' specifically, we might want to keep the SPA shell or update it. 
-        // Let's update it for now, assuming standard static hosting.
-      } else {
-         const routePath = route.substring(1); // remove leading slash
-         const parts = routePath.split('/');
-         const dir = path.join(distDir, ...parts);
-         
-         if (!fs.existsSync(dir)) {
-            fs.mkdirSync(dir, { recursive: true });
-         }
-         filePath = path.join(dir, 'index.html');
-      }
+        // Correct path resolution
+        let filePath;
+        if (route === '/') {
+           // Skip overwriting root index.html to minimize SPA risk, 
+           // OR overwrite if we are confident.
+           // User REQUESTED specific dist paths: "dist/index.html".
+           // Let's overwrite index.html but maybe backup original? 
+           // Actually, standard practice for simple static hosting of SPA is:
+           // Root index.html IS the shell. 
+           // If we overwrite it with hydrated content, that's fine as long as JS hydrates over it.
+           filePath = path.join(distDir, 'index.html');
+        } else {
+           const routePath = route.substring(1);
+           const parts = routePath.split('/');
+           const dir = path.join(distDir, ...parts);
+           if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+           filePath = path.join(dir, 'index.html');
+        }
 
-      // If route is root, we might not want to overwrite completely if it breaks client-side routing.
-      // But standard SSG does overwrite. 
-      // Let's safe-guard: if it's root, we might skip or save as copy.
-      // But user asked for prerender.
-      
-      if (route !== '/') {
         fs.writeFileSync(filePath, content);
         console.log(`Saved: ${filePath}`);
-      } else {
-        // For root, maybe don't overwrite the main app shell entry point purely with static content 
-        // if it lacks the JS bundles dynamics? 
-        // Page.content() includes script tags, so it should hydrate.
-        // We'll overwrite.
-        // fs.writeFileSync(filePath, content); 
-        console.log(`Skipping overwrite of root index.html to preserve SPA shell integrity for now.`);
-      }
 
-    } catch (err) {
-      console.error(`Failed to prerender ${route}:`, err);
+      } catch (err) {
+        console.error(`Failed to prerender ${route}:`, err);
+      }
+    }
+
+    await browser.close();
+    console.log('Prerender complete.');
+
+  } catch (err) {
+    console.error('Fatal prerender error:', err);
+    process.exit(1);
+  } finally {
+    // 4. Deterministic Shutdown
+    console.log('Shutting down server...');
+    server.kill(); // This kills the shell process usually.
+    // On Windows with `shell: true`, `server.kill()` might not kill the tree.
+    // simpler to fallback to pkill-like behavior just for this script if needed, 
+    // OR just rely on exit.
+    // For Node child_process, if we kill parent, child might linger on Windows.
+    // Let's try tree kill or just standard kill.
+    // Because we are in "Hardened" mode, let's use a robust kill snippet.
+    
+    if (process.platform === 'win32') {
+       spawn("taskkill", ["/pid", server.pid.toString(), '/f', '/t']);
+    } else {
+       server.kill('SIGTERM'); 
     }
   }
-
-  await browser.close();
-  console.log('Prerender complete.');
 }
 
 prerender();
