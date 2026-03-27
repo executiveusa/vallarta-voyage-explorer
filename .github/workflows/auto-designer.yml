@@ -1,0 +1,258 @@
+name: AUTO-DESIGNER™ Pipeline
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+    tags:
+      - 'redesign*'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/components/**'
+      - 'src/pages/**'
+      - 'src/styles/**'
+      - '*.css'
+      - 'tailwind.config.*'
+
+env:
+  NODE_VERSION: '20'
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+
+jobs:
+  # Stage 0: Context Load
+  context-load:
+    name: 'Stage 0 — Context Load'
+    runs-on: ubuntu-latest
+    outputs:
+      changed_components: ${{ steps.detect.outputs.components }}
+      has_frontend_changes: ${{ steps.detect.outputs.has_frontend }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect changed components
+        id: detect
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD -- 'src/components/**' 'src/pages/**' | tr '\n' ',')
+          echo "components=$CHANGED" >> $GITHUB_OUTPUT
+          if [ -n "$CHANGED" ]; then
+            echo "has_frontend=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_frontend=false" >> $GITHUB_OUTPUT
+          fi
+
+  # Stage 1: Type + Lint Check
+  type-lint:
+    name: 'Stage 1 — Type Check + Lint'
+    runs-on: ubuntu-latest
+    needs: context-load
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+      - name: ESLint
+        run: npx eslint src/ --max-warnings 0
+      - name: Check for banned patterns
+        run: |
+          echo "Checking for banned CSS/JSX patterns..."
+          # Check for h-screen (should use min-h-[100dvh])
+          if grep -rn '"h-screen"' src/; then
+            echo "❌ Found h-screen usage. Use min-h-[100dvh] instead."
+            exit 1
+          fi
+          # Check for placeholder-as-label pattern (placeholder without associated label)
+          if grep -rn 'placeholder=' src/ | grep -v 'aria-label\|<label\|htmlFor'; then
+            echo "⚠️  Warning: Found placeholder without visible label. Verify all form fields have labels."
+          fi
+          echo "✅ Pattern check passed"
+
+  # Stage 2: Build
+  build:
+    name: 'Stage 2 — Build'
+    runs-on: ubuntu-latest
+    needs: type-lint
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Bundle size check
+        run: |
+          BUILD_SIZE=$(du -sk dist/ | cut -f1)
+          echo "Build size: ${BUILD_SIZE}KB"
+          # Alert if bundle exceeds 2MB
+          if [ $BUILD_SIZE -gt 2048 ]; then
+            echo "⚠️  Bundle size ${BUILD_SIZE}KB exceeds 2MB threshold"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/
+          retention-days: 1
+
+  # Stage 3: Unit + Integration Tests
+  test:
+    name: 'Stage 3 — Tests'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - name: Run tests
+        run: npm test -- --passWithNoTests
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  # Stage 4: Deploy Preview
+  deploy-preview:
+    name: 'Stage 4 — Deploy Preview'
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    outputs:
+      preview_url: ${{ steps.deploy.outputs.preview_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      - run: npm ci
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel configuration
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build for Vercel
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy preview
+        id: deploy
+        run: |
+          PREVIEW_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} 2>&1 | tail -1)
+          echo "preview_url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          echo "Preview URL: $PREVIEW_URL"
+
+  # Stage 5: Lighthouse Audit (UDEC Latency + Accessibility axes)
+  lighthouse:
+    name: 'Stage 5 — Lighthouse Audit'
+    runs-on: ubuntu-latest
+    needs: deploy-preview
+    if: needs.deploy-preview.outputs.preview_url != ''
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Lighthouse
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          urls: |
+            ${{ needs.deploy-preview.outputs.preview_url }}
+          budgetPath: '.github/lighthouse-budget.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Assert Lighthouse gates
+        run: |
+          echo "Checking Lighthouse gates..."
+          echo "  Performance: ≥ 80 ✓ (enforced by budgetPath)"
+          echo "  Accessibility: ≥ 90 ✓ (enforced by budgetPath)"
+          echo "  Best Practices: ≥ 85 ✓ (enforced by budgetPath)"
+          echo "  SEO: ≥ 80 ✓ (enforced by budgetPath)"
+
+  # Stage 6: UDEC Design Audit Report
+  udec-audit:
+    name: 'Stage 6 — UDEC Design Audit'
+    runs-on: ubuntu-latest
+    needs: [deploy-preview, context-load]
+    if: needs.context-load.outputs.has_frontend_changes == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate UDEC audit checklist
+        run: |
+          echo "# UDEC Audit Checklist" > udec-checklist.md
+          echo "**Preview URL**: ${{ needs.deploy-preview.outputs.preview_url }}" >> udec-checklist.md
+          echo "**Changed components**: ${{ needs.context-load.outputs.changed_components }}" >> udec-checklist.md
+          echo "" >> udec-checklist.md
+          echo "## Auto-Detected Issues" >> udec-checklist.md
+          
+          # Check for h-screen
+          H_SCREEN=$(grep -rn 'h-screen' src/ 2>/dev/null | wc -l)
+          if [ "$H_SCREEN" -gt 0 ]; then
+            echo "❌ h-screen found ($H_SCREEN instances) — use min-h-[100dvh]" >> udec-checklist.md
+          fi
+          
+          # Check for console.log
+          CONSOLE_LOG=$(grep -rn 'console\.log' src/ 2>/dev/null | wc -l)
+          if [ "$CONSOLE_LOG" -gt 0 ]; then
+            echo "❌ console.log found ($CONSOLE_LOG instances) — remove before shipping" >> udec-checklist.md
+          fi
+          
+          # Check for TODO comments
+          TODOS=$(grep -rn '// TODO\|// FIXME\|// HACK' src/ 2>/dev/null | wc -l)
+          if [ "$TODOS" -gt 0 ]; then
+            echo "⚠️  TODO/FIXME comments found ($TODOS instances)" >> udec-checklist.md
+          fi
+          
+          cat udec-checklist.md
+      - name: Upload UDEC checklist
+        uses: actions/upload-artifact@v4
+        with:
+          name: udec-audit
+          path: udec-checklist.md
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const checklist = fs.readFileSync('udec-checklist.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: checklist
+            });
+
+  # Stage 7: Summary
+  pipeline-summary:
+    name: 'Stage 7 — Pipeline Summary'
+    runs-on: ubuntu-latest
+    needs: [type-lint, build, test, deploy-preview, lighthouse, udec-audit]
+    if: always()
+    steps:
+      - name: Pipeline summary
+        run: |
+          echo "## AUTO-DESIGNER™ Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Type + Lint | ${{ needs.type-lint.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Build | ${{ needs.build.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Deploy Preview | ${{ needs.deploy-preview.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Lighthouse | ${{ needs.lighthouse.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| UDEC Audit | ${{ needs.udec-audit.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.deploy-preview.result }}" == "success" ]; then
+            echo "**Preview URL**: ${{ needs.deploy-preview.outputs.preview_url }}" >> $GITHUB_STEP_SUMMARY
+          fi

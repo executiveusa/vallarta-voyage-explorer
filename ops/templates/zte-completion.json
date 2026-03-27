@@ -1,0 +1,29 @@
+{
+  "bead_id": "ZTE-YYYYMMDD-NNNN",
+  "task": "Short task description",
+  "status": "COMPLETE",
+  "stages_completed": [
+    "CONTEXT_LOAD",
+    "PLAN",
+    "IMPLEMENT",
+    "TEST",
+    "COMMIT",
+    "DEPLOY",
+    "VERIFY",
+    "NOTIFY"
+  ],
+  "files_changed": [],
+  "tests_passed": "N/N",
+  "lint_passed": true,
+  "type_check_passed": true,
+  "udec_score": null,
+  "udec_cert": null,
+  "deployed_to": null,
+  "pr_url": null,
+  "commit_sha": null,
+  "elapsed_seconds": 0,
+  "cost_usd": 0.0,
+  "rollback_command": null,
+  "byterover_stored": false,
+  "notes": null
+}
