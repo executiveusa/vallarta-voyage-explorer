@@ -1,4 +1,10 @@
-[jcodemunch-mcp]
+# CLAUDE.md — Verified Vallarta™ Workspace Root
+# Read this FIRST before any other file.
+
+## Prime Directive
+All agents in this workspace are governed by the EMERALD TABLETS™:
+`.emerald-tablets-tm/PRIME_DIRECTIVE.md`
+Read all 9 tablets before beginning work.
 
 ## MANDATORY: jCodeMunch MCP — Token-Efficient Code Retrieval
 
@@ -18,27 +24,31 @@ Estimated tokens saved: <estimate based on ~95% reduction per file avoided>
 =======================================
 ```
 
-### How to Use jCodeMunch Tools:
-- Index the project first: use `mcp__jcodemunch__index_codebase` or equivalent
-- Search for symbols: functions, classes, methods by name
-- Retrieve only the relevant symbol, not the whole file
-- This is MANDATORY — not optional
+## Stack
+- Frontend: Vite + React 18 + TypeScript + Tailwind + shadcn/ui
+- Database: Supabase (live: enzyewybberxgpmgixib.supabase.co)
+- Backend: Hono + Prisma (backend-node/)
+- Auth: Supabase Auth (already wired)
+- Deployment: Vercel (frontend) + Railway (backend)
 
-[byterover-mcp]
+## Brand
+- English: Verified Vallarta™
+- Spanish: Verificado Vallarta™
+- VV monogram: luxury double-V
+- Colors: navy #0a1628, gold #c9a84c, cream #f5f0e8, coral #ed6a5a
 
-You are given two tools from Byterover MCP server, including
-## 1. `byterover-store-knowledge`
-You `MUST` always use this tool when:
+## Key Files
+| What | Where |
+|------|-------|
+| Design tokens | tailwind.config.ts + src/index.css |
+| Business data | src/hooks/useDirectoryListings.ts (→ Supabase) |
+| WhatsApp hooks | src/hooks/useWhatsApp.ts |
+| Sunset engine | backend-node/src/routes/sunset.ts |
+| Supabase client | src/integrations/supabase/client.ts |
+| Paperclip config | .paperclip/company.json |
 
-+ Learning new patterns, APIs, or architectural decisions from the codebase
-+ Encountering error solutions or debugging techniques
-+ Finding reusable code patterns or utility functions
-+ Completing any significant task or plan implementation
-
-## 2. `byterover-retrieve-knowledge`
-You `MUST` always use this tool when:
-
-+ Starting any new task or implementation to gather relevant context
-+ Before making architectural decisions to understand existing patterns
-+ When debugging issues to check for previous solutions
-+ Working with unfamiliar parts of the codebase
+## Rules
+- Never publish business without approvalStatus = 'APPROVED'
+- Never hardcode secrets — use .env.local
+- Never modify supabase/migrations/ manually — use supabase CLI
+- All copy must pass Krug usability + P.A.S.S. framework
