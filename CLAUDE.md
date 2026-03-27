@@ -1,3 +1,17 @@
+# Claude Agent Config — Vallarta Voyage Explorer
+
+## MANDATORY: Read These Files Before Any Task
+
+1. `.claude/SKILL.md` — all capabilities, token strategy, skill registry
+2. `.claude/AGENTS.md` — full agent roles, circuit breakers, routing
+3. `.claude/ZTE_PROTOCOL.md` — ZTE execution protocol (7 stages)
+4. For frontend: `.github/AUTO_DESIGNER_CONFIG.md` — mandatory design law
+5. For frontend: `.claude/design-system.json` — design tokens
+
+See `.claude/AGENTS.md` for complete agent system documentation.
+
+---
+
 [byterover-mcp]
 
 [byterover-mcp]

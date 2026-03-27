@@ -57,9 +57,9 @@ const Chatbot = () => {
            if (data?.error) throw new Error(data.error);
 
            setMessages(prev => [...prev, { text: "I've passed your booking request to our concierge team. They will verify availability and reach out shortly!", sender: 'bot' }]);
-       } catch(e: any) {
+       } catch(e: unknown) {
            console.error(e);
-           const msg = e.message?.includes('Too many') 
+           const msg = e instanceof Error && e.message?.includes('Too many') 
              ? "You've reached the request limit. Please try again later."
              : "Connection issue. Please use the main Booking form above.";
            setMessages(prev => [...prev, { text: msg, sender: 'bot' }]);

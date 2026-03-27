@@ -60,7 +60,7 @@ const BookingSection = () => {
                agent_suggested: false
             },
              // Honeypot handled in body automatically if mapped or we pass explicit
-            honeypot: (e.target as any).company_website?.value 
+            honeypot: (e.target as HTMLFormElement & { company_website?: HTMLInputElement }).company_website?.value 
         }
       });
 
@@ -70,9 +70,9 @@ const BookingSection = () => {
       toast.success("Request received! Our concierge will contact you shortly.");
       setFormData({ name: "", email: "", date: "", guests: "2", message: "" });
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Booking error:", error);
-      const msg = error.message?.includes('Too many') 
+      const msg = error instanceof Error && error.message?.includes('Too many') 
          ? "Request limit reached. Please try later." 
          : "Failed to submit request. Please try again.";
       toast.error(msg);
