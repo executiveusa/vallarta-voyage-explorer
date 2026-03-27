@@ -93,6 +93,18 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))'
         },
+        vv: {
+          navy:      '#0a1628',
+          navyLight: '#0f2040',
+          gold:      '#c9a84c',
+          goldLight: '#d4b85a',
+          cream:     '#f5f0e8',
+          creamDark: '#ede5d5',
+          coral:     '#ed6a5a',
+          sage:      '#edf1e8',
+          dark:      '#141414',
+          glass:     'rgba(10, 22, 40, 0.85)',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
