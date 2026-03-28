@@ -25,7 +25,7 @@ const ShareCardButton = ({ spotName, area, imageUrl, isForecast = false }) => {
 
        if (isForecast) {
          blob = await drawForecastCard("02:45:12", "7:00 PM"); // Mock times for now, would be better to pass real props
-         shareTitle = 'Sunset Vallarta Forecast';
+         shareTitle = 'Verified Vallarta™ Forecast';
          fileName = 'sunset-forecast.png';
          analyticsEvent = { name: "share_forecast", properties: { type: "forecast" } };
        } else {
@@ -41,7 +41,7 @@ const ShareCardButton = ({ spotName, area, imageUrl, isForecast = false }) => {
          const file = new File([blob], fileName, { type: 'image/png' });
          try {
            await navigator.share({
-             title: 'Sunset Vallarta Forecast',
+             title: 'Verified Vallarta™ Forecast',
              files: [file]
            });
          } catch (e) {
