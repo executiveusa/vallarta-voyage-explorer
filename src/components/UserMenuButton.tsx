@@ -14,7 +14,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const UserMenuButton = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<import('@supabase/supabase-js').User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 

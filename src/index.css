@@ -143,3 +143,36 @@
   opacity: 0;
   transition: opacity 300ms;
 }
+
+/* Accessibility: visible focus rings for keyboard users */
+:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Skip-to-content link for screen readers / keyboard nav */
+.skip-to-content {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.5rem 1rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  border-radius: 0 0 var(--radius) var(--radius);
+  font-weight: 600;
+  text-decoration: none;
+  transition: top 0.1s ease;
+}
+
+.skip-to-content:focus {
+  top: 0;
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Tour card: ensure focus ring shows inside grid */
+.tour-card:focus-within {
+  box-shadow: 0 0 0 2px hsl(var(--ring));
+}

@@ -12,16 +12,21 @@ const Index = () => {
   useEffect(() => {
     const handleAnchorClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === 'A' && target.getAttribute('href')?.startsWith('#')) {
+      const href = target.getAttribute('href') ?? (target.closest('a')?.getAttribute('href') ?? null);
+      
+      if (href?.startsWith('/#')) {
         e.preventDefault();
-        const targetId = target.getAttribute('href')!.substring(1);
+        const targetId = href.substring(2);
         const targetElement = document.getElementById(targetId);
-        
         if (targetElement) {
-          window.scrollTo({
-            top: targetElement.offsetTop - 80, // Adjust for navbar height
-            behavior: 'smooth'
-          });
+          window.scrollTo({ top: targetElement.offsetTop - 80, behavior: 'smooth' });
+        }
+      } else if (target.tagName === 'A' && href?.startsWith('#')) {
+        e.preventDefault();
+        const targetId = href.substring(1);
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          window.scrollTo({ top: targetElement.offsetTop - 80, behavior: 'smooth' });
         }
       }
     };
@@ -44,8 +49,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <a href="#main-content" className="skip-to-content">Skip to main content</a>
       <Navbar />
-      <main>
+      <main id="main-content">
         <HeroSection />
         <ToursSection />
         <BookingSection />

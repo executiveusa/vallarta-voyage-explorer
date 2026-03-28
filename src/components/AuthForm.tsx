@@ -41,8 +41,8 @@ const AuthForm = () => {
 
         toast.success("Account created! Check your email to confirm your sign up.");
       }
-    } catch (error: any) {
-      toast.error(error.message || "An error occurred during authentication");
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "An error occurred during authentication");
     } finally {
       setIsLoading(false);
     }

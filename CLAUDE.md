@@ -1,21 +1,3 @@
-[jcodemunch-mcp]
-
-## MANDATORY: jCodeMunch MCP — Token-Efficient Code Retrieval
-
-jCodeMunch is installed and MUST be used before any coding work begins. It uses tree-sitter parsing to enable precise symbol-level lookups (functions, classes, methods, constants) instead of reading entire files, cutting code-reading token usage by up to 95%.
-
-### REQUIRED — Before Any Coding Task:
-1. Use `jcodemunch` tools to index and look up relevant symbols/files before opening any file
-2. Prefer `search_symbols`, `get_symbol`, or `search_files` over reading full files with the Read tool
-3. Only fall back to Read/Grep when jcodemunch cannot locate what you need
-
-### REQUIRED — After Each Session:
-Report the estimated tokens saved using jCodeMunch by outputting:
-```
-=== jCodeMunch Token Savings Report ===
-Files looked up via symbol search (not full reads): <count>
-Estimated tokens saved: <estimate based on ~95% reduction per file avoided>
-=======================================
 ```
 
 ### How to Use jCodeMunch Tools:
@@ -23,6 +5,21 @@ Estimated tokens saved: <estimate based on ~95% reduction per file avoided>
 - Search for symbols: functions, classes, methods by name
 - Retrieve only the relevant symbol, not the whole file
 - This is MANDATORY — not optional
+# Claude Agent Config — Vallarta Voyage Explorer
+
+## MANDATORY: Read These Files Before Any Task
+
+1. `.claude/SKILL.md` — all capabilities, token strategy, skill registry
+2. `.claude/AGENTS.md` — full agent roles, circuit breakers, routing
+3. `.claude/ZTE_PROTOCOL.md` — ZTE execution protocol (7 stages)
+4. For frontend: `.github/AUTO_DESIGNER_CONFIG.md` — mandatory design law
+5. For frontend: `.claude/design-system.json` — design tokens
+
+See `.claude/AGENTS.md` for complete agent system documentation.
+
+---
+
+[byterover-mcp]
 
 [byterover-mcp]
 

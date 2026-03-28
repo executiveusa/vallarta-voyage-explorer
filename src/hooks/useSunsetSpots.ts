@@ -143,7 +143,7 @@ export const useSunsetSpots = () => {
         }
 
         // Flatten the relationship for the UI
-        const flattenedSpots: SunsetSpot[] = data.map((item: any) => ({
+        const flattenedSpots: SunsetSpot[] = data.map((item: Record<string, unknown> & { places: Record<string, unknown>; image_url?: string; vibe?: string; access_type?: string; best_time_offset_minutes?: number; tips?: string[] }) => ({
           id: item.id,
           slug: item.places.slug,
           name: item.places.name,
