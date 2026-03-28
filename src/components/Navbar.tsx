@@ -69,19 +69,28 @@ export const Navbar = () => {
                 Tracker
               </Link>
             </li>
-            {["Tours", "About", "Destinations", "Gallery"].map((item) => (
-              <li key={item}>
-                <a
-                  href={`/#${item.toLowerCase()}`}
-                  className={cn(
-                    "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                    isScrolled ? "text-gray-800" : "text-gray-900"
-                  )}
-                >
-                  {item}
-                </a>
-              </li>
-            ))}
+            <li>
+              <a
+                href="/#tours"
+                className={cn(
+                  "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
+                  isScrolled ? "text-gray-800" : "text-gray-900"
+                )}
+              >
+                Tours
+              </a>
+            </li>
+            <li>
+              <a
+                href="/#booking"
+                className={cn(
+                  "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
+                  isScrolled ? "text-gray-800" : "text-gray-900"
+                )}
+              >
+                Book
+              </a>
+            </li>
           </ul>
           <UserMenuButton />
         </div>
@@ -125,17 +134,24 @@ export const Navbar = () => {
                 Tracker
               </Link>
             </li>
-            {["Tours", "About", "Destinations", "Gallery"].map((item) => (
-              <li key={item}>
-                <a
-                  href={`/#${item.toLowerCase()}`}
-                  className="text-xl font-medium text-gray-800 hover:text-ocean-600"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item}
-                </a>
-              </li>
-            ))}
+            <li>
+              <a
+                href="/#tours"
+                className="text-xl font-medium text-gray-800 hover:text-ocean-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Tours
+              </a>
+            </li>
+            <li>
+              <a
+                href="/#booking"
+                className="text-xl font-medium text-gray-800 hover:text-ocean-600"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Book
+              </a>
+            </li>
           </ul>
           <div className="mt-8">
             <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
