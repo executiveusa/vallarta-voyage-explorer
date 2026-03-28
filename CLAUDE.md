@@ -1,3 +1,10 @@
+```
+
+### How to Use jCodeMunch Tools:
+- Index the project first: use `mcp__jcodemunch__index_codebase` or equivalent
+- Search for symbols: functions, classes, methods by name
+- Retrieve only the relevant symbol, not the whole file
+- This is MANDATORY — not optional
 # Claude Agent Config — Vallarta Voyage Explorer
 
 ## MANDATORY: Read These Files Before Any Task
