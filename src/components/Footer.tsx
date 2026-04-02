@@ -117,17 +117,15 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div
-          className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8"
-          style={{ borderTop: '1px solid rgba(201,168,76,0.08)' }}
-        >
-          <p style={{ color: 'rgba(245,240,232,0.2)', fontSize: '11px' }}>
-            © {year} Verified Vallarta™ / Verificado Vallarta™ · Kupuri Media™
-          </p>
-          <p style={{ color: 'rgba(245,240,232,0.15)', fontSize: '11px' }}>
-            {isEs ? 'Impulsado por SYNTHIA™' : 'Powered by SYNTHIA™'}
-          </p>
+        {/* Bottom section */}
+        <div className="pt-10 border-t border-gray-800 text-center md:text-left md:flex md:justify-between text-gray-500 text-sm">
+          <div>
+            <p>© {currentYear} Sunset Vallarta. All rights reserved.</p>
+          </div>
+          <div className="mt-4 md:mt-0 space-x-6">
+            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+          </div>
         </div>
       </div>
     </footer>

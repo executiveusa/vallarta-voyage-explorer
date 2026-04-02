@@ -1,3 +1,17 @@
+# Copilot Instructions — Vallarta Voyage Explorer
+
+## MANDATORY: Read Before Any Task
+
+1. `.claude/SKILL.md` — all capabilities, token strategy, skill registry
+2. `.claude/AGENTS.md` — agent roles, circuit breakers, routing
+3. `.claude/ZTE_PROTOCOL.md` — ZTE execution protocol (7 stages)
+4. For frontend work: `.github/AUTO_DESIGNER_CONFIG.md` — mandatory design law
+5. For frontend work: `.claude/design-system.json` — design tokens
+
+See `.claude/AGENTS.md` for complete agent system documentation.
+
+---
+
 [byterover-mcp]
 
 [byterover-mcp]

@@ -16,9 +16,9 @@ const AdminPanel = () => {
   const [loading, setLoading] = useState(true);
 
   // Data states
-  const [photos, setPhotos] = useState<any[]>([]);
-  const [claims, setClaims] = useState<any[]>([]);
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [photos, setPhotos] = useState<Record<string, unknown>[]>([]);
+  const [claims, setClaims] = useState<Record<string, unknown>[]>([]);
+  const [bookings, setBookings] = useState<Record<string, unknown>[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -69,7 +69,7 @@ const AdminPanel = () => {
     }
   };
 
-  const handleClaimAction = async (claim: any, status: 'approved' | 'rejected') => {
+  const handleClaimAction = async (claim: Record<string, unknown>, status: 'approved' | 'rejected') => {
     if (status === 'approved') {
         // 1. Approve Claim
         const { error: cError } = await supabase.from('listing_claims').update({ status }).eq('id', claim.id);

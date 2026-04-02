@@ -62,9 +62,9 @@ export const findAgentTarget = async (input: AgentTargetInput) => {
   };
 
   const sorted = data.sort((a, b) => {
-    // @ts-ignore
+    // @ts-expect-error - plan_tier indexing
     const scoreA = tierWeight[a.plan_tier] || 0;
-    // @ts-ignore
+    // @ts-expect-error - plan_tier indexing
     const scoreB = tierWeight[b.plan_tier] || 0;
     return scoreB - scoreA;
   });

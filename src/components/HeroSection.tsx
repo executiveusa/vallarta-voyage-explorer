@@ -153,8 +153,8 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 z-10" style={{ background: config.overlay }} />
         <img
-          src={config.bg}
-          alt="Puerto Vallarta"
+          src="https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop"
+          alt="Puerto Vallarta sunset"
           className="object-cover w-full h-full"
           loading="eager"
         />
@@ -181,95 +181,20 @@ export default function HeroSection() {
           />
           {copy.eyebrow}
         </div>
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 container mx-auto px-6 text-center flex flex-col items-center justify-center pt-20 pb-10">
-        {/* Title */}
-        <h1
-          className="mb-6 leading-none tracking-tight"
-          style={{
-            fontFamily: 'Cormorant Garamond, Georgia, serif',
-            fontSize: 'clamp(3rem, 10vw, 7rem)',
-            fontWeight: 600,
-            letterSpacing: '-0.02em',
-            color: '#f5f0e8',
-          }}
-        >
-          {isGolden && sunData.minutesToSunset !== null ? (
-            <span className="flex flex-col items-center gap-2">
-              <span
-                style={{
-                  fontSize: '0.45em',
-                  letterSpacing: '0.3em',
-                  fontWeight: 400,
-                  opacity: 0.7,
-                  display: 'block',
-                }}
-              >
-                {copy.title[0]}
-              </span>
-              <span style={{ color: config.accentColor }}>
-                {formatCountdown(sunData.minutesToSunset)}
-              </span>
-            </span>
-          ) : (
-            copy.title.map((line, i) => (
-              <span key={i} className="block">
-                {i === 0
-                  ? <><span style={{ color: config.accentColor }}>{line}</span></>
-                  : line}
-              </span>
-            ))
-          )}
-        </h1>
-
-        {/* Subtitle */}
-        <p
-          className="max-w-xl mb-10 font-light"
-          style={{
-            fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
-            lineHeight: 1.65,
-            letterSpacing: '0.02em',
-            color: 'rgba(245,240,232,0.8)',
-          }}
-        >
-          {copy.subtitle.split('\n').map((line, i) => (
-            <span key={i} className="block">{line}</span>
-          ))}
-        </p>
-
-        {/* CTAs */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center">
-          <Button
-            size="lg"
-            className="rounded-full px-8 py-6 font-semibold shadow-xl"
-            style={{
-              background: `linear-gradient(135deg, ${config.accentColor}, ${config.accentColor}cc)`,
-              color: '#0a1628',
-              border: 'none',
-              letterSpacing: '0.15em',
-              fontSize: '11px',
-              textTransform: 'uppercase',
-              boxShadow: `0 8px 32px ${config.accentColor}40`,
-            }}
-            onClick={() => navigate('/directory')}
+        
+        <div className="flex flex-col sm:flex-row gap-4 animate-fade-up opacity-0" style={{ animationDelay: "700ms", animationFillMode: "forwards" }}>
+          <Button 
+            size="lg" 
+            className="bg-ocean-600 hover:bg-ocean-700 text-white rounded-xl px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
+            onClick={scrollToTours}
           >
             {copy.cta1}
           </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="rounded-full px-8 py-6 font-medium backdrop-blur-sm"
-            style={{
-              background: 'rgba(10,22,40,0.5)',
-              border: '1px solid rgba(245,240,232,0.3)',
-              color: '#f5f0e8',
-              letterSpacing: '0.15em',
-              fontSize: '11px',
-              textTransform: 'uppercase',
-            }}
-            onClick={() => navigate('/sunsets')}
+          <Button 
+            size="lg" 
+            variant="outline" 
+            className="bg-transparent border-white text-white hover:bg-white/10 rounded-xl px-8 py-6 text-lg backdrop-blur-sm"
+            onClick={() => navigate("/directory")}
           >
             {copy.cta2}
           </Button>
@@ -290,6 +215,18 @@ export default function HeroSection() {
           </span>
           <div className="h-px w-12 opacity-30" style={{ background: '#c9a84c' }} />
         </div>
+      </div>
+
+      {/* Trust signals */}
+      <div className="relative z-10 flex items-center justify-center gap-2 sm:gap-6 pb-4 flex-wrap">
+        <div className="flex items-center gap-1.5 text-white/80 text-sm">
+          <svg className="w-4 h-4 fill-sand-400 text-sand-400" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+          <span>4.9 avg rating</span>
+        </div>
+        <span className="text-white/40 hidden sm:inline">·</span>
+        <span className="text-white/80 text-sm">2,400+ experiences booked</span>
+        <span className="text-white/40 hidden sm:inline">·</span>
+        <span className="text-white/80 text-sm">Local guides since 2019</span>
       </div>
 
       {/* Scroll indicator */}
