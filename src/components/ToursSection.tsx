@@ -23,7 +23,7 @@ const ToursSection = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16 animate-fade-up">
           <span className="text-sm font-medium text-ocean-600 tracking-wide uppercase">
-            Sunset Vallarta Originals
+            Verified Vallarta™ Originals
           </span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4 text-gray-900">
             Private Sunsets & Hidden Routes

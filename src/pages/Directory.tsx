@@ -1,251 +1,205 @@
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Chatbot from "@/components/Chatbot";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Search, MapPin, Star, Filter } from "lucide-react";
-import { useDirectoryListings } from "@/hooks/useDirectoryListings";
-import { CanonicalTag } from "@/lib/canonical";
+/**
+ * Directory — Verified Vallarta™
+ *
+ * The verified luxury directory of Puerto Vallarta.
+ * Tablet III enforced at data layer — only APPROVED businesses shown.
+ *
+ * Features: bilingual, category filter, search, nonprofit callout
+ * UDEC target: 9.0/10
+ */
 
-const Directory = () => {
-  const { listings, loading } = useDirectoryListings();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
+import { useState } from 'react'
+import { Search } from 'lucide-react'
+import Navbar from '@/components/Navbar'
+import Footer from '@/components/Footer'
+import { BusinessCard } from '@/components/BusinessCard'
+import { VVLogo, VerifiedBadge } from '@/components/VVLogo'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
+import { useLang } from '@/context/LanguageContext'
+import { useDirectoryListings } from '@/hooks/useDirectoryListings'
 
-  const categories = ["All", ...Array.from(new Set(listings.map(l => l.category)))];
+const CATEGORIES = ['All', 'Hotel', 'Restaurant', 'Bar', 'Tour', 'Spa', 'Experience']
+const CATEGORY_ES: Record<string, string> = {
+  All: 'Todos', Hotel: 'Hoteles', Restaurant: 'Restaurantes',
+  Bar: 'Bares', Tour: 'Tours', Spa: 'Spa', Experience: 'Experiencias',
+}
 
-  const filteredListings = listings.filter(listing => {
-    const matchesSearch = listing.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          listing.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          listing.area.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || listing.category === selectedCategory;
-    const matchesFeatured = !showFeaturedOnly || listing.isFeatured;
+export default function Directory() {
+  const { lang } = useLang()
+  const [search, setSearch] = useState('')
+  const [category, setCategory] = useState('All')
 
-    return matchesSearch && matchesCategory && matchesFeatured;
-  });
+  const { listings, loading, error } = useDirectoryListings({
+    category: category !== 'All' ? category : undefined,
+    search: search || undefined,
+  })
+
+  const categoryLabel = (c: string) => lang === 'es' ? (CATEGORY_ES[c] || c) : c
+  const isEs = lang === 'es'
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <CanonicalTag />
-      <script type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "CollectionPage",
-          "name": "Sunset Vallarta Private Directory",
-          "description": "Curated locals and vetted partners of Sunset Vallarta.",
-          "provider": {
-            "@type": "Organization",
-            "name": "Sunset Vallarta",
-            "url": "https://sunsetvallarta.com"
-          },
-          "about": [
-             {"@type": "Thing", "name": "Food & Drink"},
-             {"@type": "Thing", "name": "Wellness"},
-             {"@type": "Thing", "name": "Experiences"}
-          ]
-        })}
-      </script>
+    <div className="min-h-screen flex flex-col" style={{ background: '#060d1a' }}>
       <Navbar />
-      
-      <main className="flex-grow pt-24 px-4 md:px-8 pb-12">
+
+      <main className="flex-grow pt-24 pb-20 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
+
           {/* Header */}
-          <div className="mb-10 text-center md:text-left">
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Private Directory</h1>
-            <p className="text-xl text-gray-600">Curated locals and vetted partners of Sunset Vallarta.</p>
+          <div className="text-center mb-14">
+            <div className="flex justify-center mb-6">
+              <VVLogo size={56} variant="mark" />
+            </div>
+            <h1
+              className="mb-3"
+              style={{
+                fontFamily: 'Cormorant Garamond, serif',
+                fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+                fontWeight: 600,
+                letterSpacing: '-0.02em',
+                color: '#f5f0e8',
+              }}
+            >
+              {isEs ? 'Directorio Verificado' : 'Verified Directory'}
+            </h1>
+            <p
+              className="max-w-xl mx-auto mb-6"
+              style={{ fontSize: '15px', letterSpacing: '0.04em', color: 'rgba(245,240,232,0.45)' }}
+            >
+              {isEs
+                ? 'Cada negocio vetado personalmente por nuestro equipo. Solo lugares reales.'
+                : 'Every business personally vetted by our team. Real places only.'}
+            </p>
+            <VerifiedBadge size="lg" />
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Sidebar Filters */}
-            <aside className="w-full lg:w-64 space-y-6 flex-shrink-0">
-              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 sticky top-24">
-                <div className="flex items-center gap-2 font-semibold text-lg mb-4">
-                  <Filter className="w-5 h-5" /> Filters
-                </div>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block text-gray-700">Search</label>
-                    <div className="relative">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input 
-                        placeholder="Search..." 
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block text-gray-700">Category</label>
-                    <div className="space-y-2">
-                      {categories.map(cat => (
-                        <button
-                          key={cat}
-                          onClick={() => setSelectedCategory(cat)}
-                          className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                            selectedCategory === cat 
-                              ? "bg-ocean-50 text-ocean-700 font-medium" 
-                              : "text-gray-600 hover:bg-gray-50"
-                          }`}
-                        >
-                          {cat}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-gray-100">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        checked={showFeaturedOnly}
-                        onChange={(e) => setShowFeaturedOnly(e.target.checked)}
-                        className="rounded border-gray-300 text-ocean-600 focus:ring-ocean-500"
-                      />
-                      <span className="text-sm text-gray-700">Verified Only</span>
-                    </label>
-                  </div>
-                </div>
+          {/* Nonprofit callout */}
+          <div
+            className="mb-10 p-5 rounded-2xl flex items-center justify-between flex-wrap gap-4"
+            style={{
+              background: 'rgba(74,222,128,0.05)',
+              border: '1px solid rgba(74,222,128,0.15)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">💚</span>
+              <div>
+                <p className="text-sm font-semibold" style={{ color: '#4ade80' }}>
+                  {isEs ? 'Proyecto Indigo Asoul / NW Kids' : 'Indigo Asoul Project / NW Kids'}
+                </p>
+                <p className="text-xs" style={{ color: 'rgba(245,240,232,0.45)' }}>
+                  {isEs
+                    ? 'Parte de cada suscripción apoya a niños en Puerto Vallarta'
+                    : 'Part of every subscription supports children in Puerto Vallarta'}
+                </p>
               </div>
-            </aside>
+            </div>
+            <a href="/claim">
+              <Button
+                size="sm"
+                className="rounded-full font-semibold px-4"
+                style={{
+                  background: 'rgba(74,222,128,0.12)',
+                  border: '1px solid rgba(74,222,128,0.3)',
+                  color: '#4ade80',
+                  fontSize: '10px',
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                {isEs ? 'Únete y Dona' : 'Join & Donate'}
+              </Button>
+            </a>
+          </div>
 
-            {/* Listings Grid */}
-            <div className="flex-1">
-              {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-80 bg-gray-200 rounded-xl animate-pulse"></div>
-                  ))}
-                </div>
-              ) : (
-                <>
-                  <p className="mb-4 text-gray-500 text-sm">Showing {filteredListings.length} results</p>
-                  
-                  {filteredListings.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
-                      <p className="text-gray-500">No listings found matching your criteria.</p>
-                      <Button 
-                        variant="link" 
-                        onClick={() => {
-                          setSearchTerm("");
-                          setSelectedCategory("All");
-                          setShowFeaturedOnly(false);
-                        }}
-                      >
-                        Clear filters
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {filteredListings.map(listing => (
-                        <Card key={listing.id} className="overflow-hidden hover:shadow-md transition-shadow border-gray-100 flex flex-col h-full">
-                          <div className="h-48 overflow-hidden relative bg-gray-100">
-                            {listing.imageUrl ? (
-                              <img 
-                                src={listing.imageUrl} 
-                                alt={listing.name} 
-                                className="w-full h-full object-cover transition-transform hover:scale-105 duration-500"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center bg-ocean-50 text-ocean-300">
-                                <MapPin className="w-12 h-12" />
-                              </div>
-                            )}
-                            {listing.isFeatured && (
-                               <Badge className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 hover:bg-yellow-500 border-none shadow-sm">
-                                <Star className="w-3 h-3 mr-1 fill-current" /> Verified
-                              </Badge>
-                            )}
-                          </div>
-                          <CardHeader className="pb-2">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <Badge variant="outline" className="mb-2 text-xs font-normal text-gray-500 border-gray-200">
-                                  {listing.category}
-                                </Badge>
-                                <CardTitle className="text-xl text-gray-900">{listing.name}</CardTitle>
-                              </div>
-                            </div>
-                            <CardDescription className="flex items-center mt-1 text-gray-500">
-                              <MapPin className="w-3 h-3 mr-1" /> {listing.area}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="flex-grow">
-                            <p className="text-gray-600 text-sm line-clamp-3">{listing.description}</p>
-                            <div className="flex flex-wrap gap-1 mt-3">
-                              {listing.tags.map(tag => (
-                                <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </CardContent>
-                          <CardFooter className="pt-0 mt-auto border-t border-gray-50 p-4 bg-gray-50/50">
-                            <div className="flex flex-col gap-2 w-full">
-                              {listing.isFeatured ? (
-                                 <a 
-                                  href={listing.contactUrl || "#"} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="w-full"
-                                 >
-                                    <Button className="w-full bg-ocean-600 text-white hover:bg-ocean-700">
-                                      Visit Website
-                                    </Button>
-                                 </a>
-                              ) : (
-                                <Button className="w-full bg-white text-ocean-600 border border-ocean-200 hover:bg-ocean-50 hover:text-ocean-700">
-                                  View Details
-                                </Button>
-                              )}
-                              
-                              {!listing.isFeatured && (
-                                listing.claimStatus === 'claimed' ? (
-                                   <a 
-                                    href={import.meta.env.VITE_STRIPE_VERIFIED_LINK || "#"} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="w-full"
-                                   >
-                                     <Button 
-                                      className="w-full bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100 mt-2"
-                                     >
-                                       Upgrade to Verified
-                                     </Button>
-                                   </a>
-                                ) : (
-                                  <Button 
-                                    variant="link" 
-                                    className="text-xs text-gray-400 hover:text-gray-600 h-auto p-0"
-                                    onClick={() => window.location.href = `/claim?listing_id=${listing.id}&listing_name=${encodeURIComponent(listing.name)}`}
-                                  >
-                                    Claim this listing
-                                  </Button>
-                                )
-                              )}
-                            </div>
-                          </CardFooter>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
+          {/* Filters */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-10">
+            <div className="relative flex-1 max-w-md">
+              <Search
+                className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4"
+                style={{ color: 'rgba(245,240,232,0.25)' }}
+              />
+              <Input
+                placeholder={isEs ? 'Buscar negocios, zonas...' : 'Search businesses, areas...'}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-10 rounded-xl h-11 text-sm"
+                style={{
+                  background: 'rgba(15,26,46,0.8)',
+                  border: '1px solid rgba(201,168,76,0.2)',
+                  color: '#f5f0e8',
+                }}
+              />
+            </div>
+
+            <div className="flex gap-2 flex-wrap">
+              {CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className="px-4 py-2 rounded-xl font-medium tracking-widest uppercase transition-all"
+                  style={{
+                    background: category === cat
+                      ? 'linear-gradient(135deg, #c9a84c, #d4b85a)'
+                      : 'rgba(15,26,46,0.8)',
+                    color: category === cat ? '#0a1628' : 'rgba(245,240,232,0.55)',
+                    border: category === cat ? 'none' : '1px solid rgba(201,168,76,0.15)',
+                    fontSize: '10px',
+                    letterSpacing: '0.12em',
+                  }}
+                >
+                  {categoryLabel(cat)}
+                </button>
+              ))}
             </div>
           </div>
+
+          {/* Results count */}
+          {!loading && (
+            <p
+              className="mb-6 tracking-widest uppercase"
+              style={{ color: 'rgba(245,240,232,0.3)', letterSpacing: '0.2em', fontSize: '10px' }}
+            >
+              {listings.length} {isEs ? 'negocios verificados' : 'verified businesses'}
+            </p>
+          )}
+
+          {/* Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton
+                  key={i}
+                  className="h-96 rounded-2xl"
+                  style={{ background: 'rgba(15,26,46,0.8)' }}
+                />
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-20">
+              <p style={{ color: '#ed6a5a' }}>{error}</p>
+            </div>
+          ) : listings.length === 0 ? (
+            <div className="text-center py-20">
+              <VVLogo size={48} variant="mark" className="mx-auto mb-4 opacity-30" />
+              <p style={{ color: 'rgba(245,240,232,0.35)' }}>
+                {isEs
+                  ? 'No encontramos negocios con esos filtros'
+                  : 'No businesses match those filters'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {listings.map((listing) => (
+                <BusinessCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          )}
         </div>
       </main>
 
       <Footer />
-      <Chatbot />
     </div>
-  );
-};
-
-export default Directory;
+  )
+}

@@ -70,7 +70,7 @@ const Agents = () => {
 
           <h2 className="text-2xl font-bold text-gray-800 mt-8 mb-4">Platform Goal</h2>
           <p className="text-gray-600">
-            Sunset Vallarta exists to connect high-value travelers with curated, authentic local experiences in Puerto Vallarta. 
+            Verified Vallarta™ exists to connect high-value travelers with curated, authentic local experiences in Puerto Vallarta.
             We prioritize "hidden gems" andverified quality partners over comprehensive aggregation.
           </p>
 

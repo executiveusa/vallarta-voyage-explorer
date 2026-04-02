@@ -1,110 +1,119 @@
+import { Link } from 'react-router-dom'
+import { VVLogo } from '@/components/VVLogo'
+import { useLang } from '@/context/LanguageContext'
+import { Instagram, MessageCircle } from 'lucide-react'
 
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+export default function Footer() {
+  const { lang } = useLang()
+  const year = new Date().getFullYear()
+  const isEs = lang === 'es'
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
-  
   return (
-    <footer className="bg-gray-900 text-white pt-20 pb-10 px-6 md:px-10">
+    <footer
+      className="pt-16 pb-8 px-6 md:px-10"
+      style={{ background: '#040b18', borderTop: '1px solid rgba(201,168,76,0.1)' }}
+    >
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
-          {/* Column 1 - Company */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+
+          {/* Brand column */}
           <div>
-            <h3 className="text-2xl font-bold mb-6">
-              <span className="text-ocean-400">SUNSET</span> VALLARTA
-            </h3>
-            <p className="text-gray-400 mb-6">
-              Private sunsets, hidden streets, and curated Vallarta experiences.
+            <VVLogo size={44} variant="wordmark" className="mb-5" />
+            <p
+              className="leading-relaxed mb-6"
+              style={{ color: 'rgba(245,240,232,0.4)', fontSize: '13px' }}
+            >
+              {isEs
+                ? 'No construimos sitios web. Construimos mundos.'
+                : "We don't build websites. We build worlds."}
             </p>
-            <div className="flex space-x-4">
-              <a 
-                href="#" 
-                className="bg-gray-800 p-2 rounded-full hover:bg-ocean-600 transition-colors"
-                aria-label="Facebook"
-              >
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a 
-                href="#" 
-                className="bg-gray-800 p-2 rounded-full hover:bg-ocean-600 transition-colors"
-                aria-label="Instagram"
-              >
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a 
-                href="#" 
-                className="bg-gray-800 p-2 rounded-full hover:bg-ocean-600 transition-colors"
-                aria-label="Twitter"
-              >
-                <Twitter className="h-5 w-5" />
-              </a>
+
+            {/* Nonprofit callout */}
+            <div
+              className="p-3 rounded-xl"
+              style={{ background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.12)' }}
+            >
+              <p className="text-xs font-semibold mb-1" style={{ color: '#4ade80' }}>
+                ♥ Indigo Asoul Project / NW Kids
+              </p>
+              <p style={{ fontSize: '11px', color: 'rgba(245,240,232,0.35)' }}>
+                {isEs
+                  ? 'Parte de cada suscripción apoya a niños en Puerto Vallarta'
+                  : 'Part of every subscription supports children in Puerto Vallarta'}
+              </p>
             </div>
           </div>
 
-          {/* Column 2 - Quick Links */}
+          {/* Links column */}
           <div>
-            <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
-            <ul className="space-y-4">
-              {["Home", "Tours", "About Us", "Destinations", "Gallery", "FAQ"].map((item) => (
-                <li key={item}>
-                  <a 
-                    href={`/#${item.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="text-gray-400 hover:text-white transition-colors"
-                  >
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Column 3 - Popular Tours */}
-          <div>
-            <h4 className="text-lg font-semibold mb-6">Popular Tours</h4>
+            <h4
+              className="font-bold tracking-widest uppercase mb-6"
+              style={{ color: '#c9a84c', fontSize: '10px', letterSpacing: '0.25em' }}
+            >
+              {isEs ? 'Explora' : 'Explore'}
+            </h4>
             <ul className="space-y-4">
               {[
-                "Turtle Release Experience", 
-                "Hidden Beach Excursion", 
-                "Jungle ATV Adventure",
-                "Luxury Sailing & Snorkeling",
-                "Tequila Tasting Journey"
-              ].map((item) => (
-                <li key={item}>
-                  <a 
-                    href="/#tours"
-                    className="text-gray-400 hover:text-white transition-colors"
+                { label: isEs ? 'Directorio' : 'Directory', to: '/directory' },
+                { label: isEs ? 'Atardeceres' : 'Sunsets', to: '/sunsets' },
+                { label: isEs ? 'Registrar Negocio' : 'List Business', to: '/claim' },
+                { label: isEs ? 'Dejar Reseña' : 'Leave Review', to: '/review' },
+              ].map(link => (
+                <li key={link.to}>
+                  <Link
+                    to={link.to}
+                    className="hover:text-vv-gold transition-colors"
+                    style={{ color: 'rgba(245,240,232,0.45)', fontSize: '13px' }}
                   >
-                    {item}
-                  </a>
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Column 4 - Contact */}
+          {/* Contact column */}
           <div>
-            <h4 className="text-lg font-semibold mb-6">Contact Us</h4>
-            <ul className="space-y-4">
-              <li className="flex items-start">
-                <MapPin className="h-5 w-5 text-ocean-400 mr-3 mt-0.5" />
-                <span className="text-gray-400">
-                  123 Malecón, Zona Romántica,<br />
-                  Puerto Vallarta, Jalisco, Mexico
-                </span>
-              </li>
-              <li className="flex items-center">
-                <Phone className="h-5 w-5 text-ocean-400 mr-3" />
-                <a href="tel:+523221234567" className="text-gray-400 hover:text-white">
-                  +52 322 123 4567
-                </a>
-              </li>
-              <li className="flex items-center">
-                <Mail className="h-5 w-5 text-ocean-400 mr-3" />
-                <a href="mailto:info@visitvallarta.com" className="text-gray-400 hover:text-white">
-                  info@visitvallarta.com
-                </a>
-              </li>
-            </ul>
+            <h4
+              className="font-bold tracking-widest uppercase mb-6"
+              style={{ color: '#c9a84c', fontSize: '10px', letterSpacing: '0.25em' }}
+            >
+              {isEs ? 'Contacto' : 'Contact'}
+            </h4>
+            <div className="space-y-4">
+              <a
+                href="https://wa.me/523222000000"
+                className="flex items-center gap-3 hover:text-vv-gold transition-colors"
+                style={{ color: 'rgba(245,240,232,0.45)', fontSize: '13px' }}
+              >
+                <MessageCircle className="w-4 h-4 flex-shrink-0 text-green-400" />
+                WhatsApp
+              </a>
+              <a
+                href="https://instagram.com/verifiedvallarta"
+                className="flex items-center gap-3 hover:text-vv-gold transition-colors"
+                style={{ color: 'rgba(245,240,232,0.45)', fontSize: '13px' }}
+              >
+                <Instagram className="w-4 h-4 flex-shrink-0" style={{ color: '#c9a84c' }} />
+                @verifiedvallarta
+              </a>
+            </div>
+
+            <div className="mt-8">
+              <Link to="/claim">
+                <div
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer hover:opacity-90 transition-opacity font-semibold tracking-widest uppercase"
+                  style={{
+                    background: 'linear-gradient(135deg, #c9a84c, #d4b85a)',
+                    color: '#0a1628',
+                    fontSize: '10px',
+                    letterSpacing: '0.15em',
+                  }}
+                >
+                  {isEs ? 'Registrar mi Negocio' : 'List My Business'}
+                </div>
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -120,7 +129,5 @@ const Footer = () => {
         </div>
       </div>
     </footer>
-  );
-};
-
-export default Footer;
+  )
+}

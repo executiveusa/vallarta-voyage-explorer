@@ -9,6 +9,7 @@ import businessRouter from './routes/business.js';
 import photoRouter from './routes/photos.js';
 import contestRouter from './routes/contests.js';
 import quizRouter from './routes/quiz.js';
+import whatsappRouter from './routes/whatsapp.js';
 
 const app = new Hono();
 
@@ -37,6 +38,7 @@ app.route('/api/business', businessRouter);
 app.route('/api/photos', photoRouter);
 app.route('/api/contests', contestRouter);
 app.route('/api/quiz', quizRouter);
+app.route('/api/whatsapp', whatsappRouter);
 
 // 404 handler
 app.notFound((c) => {

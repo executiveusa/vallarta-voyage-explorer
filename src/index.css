@@ -7,6 +7,22 @@
 
 @layer base {
   :root {
+    /* ── Verified Vallarta™ Design Tokens ─────────────────────── */
+    --vv-navy:        #0a1628;
+    --vv-navy-light:  #0f2040;
+    --vv-gold:        #c9a84c;
+    --vv-gold-light:  #d4b85a;
+    --vv-cream:       #f5f0e8;
+    --vv-coral:       #ed6a5a;
+    --vv-sage:        #edf1e8;
+    --vv-dark:        #141414;
+    --vv-glass:       rgba(10, 22, 40, 0.85);
+
+    /* Typography */
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body:    'Inter', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+
     --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
 

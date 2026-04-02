@@ -14,21 +14,36 @@ See `.claude/AGENTS.md` for complete agent system documentation.
 
 [byterover-mcp]
 
-[byterover-mcp]
+## Prime Directive
+All agents governed by Emerald Tablets™.
+Root: .emerald-tablets-tm/PRIME_DIRECTIVE.md
 
-You are given two tools from Byterover MCP server, including
-## 1. `byterover-store-knowledge`
-You `MUST` always use this tool when:
+## The Agent Roster (Paperclip Company: Verified Vallarta™)
 
-+ Learning new patterns, APIs, or architectural decisions from the codebase
-+ Encountering error solutions or debugging techniques
-+ Finding reusable code patterns or utility functions
-+ Completing any significant task or plan implementation
+| Agent | Role | Goal | Budget/day |
+|-------|------|------|-----------|
+| SYNTHIA PRIME | CEO | $100K revenue milestone | $50 |
+| CAZADORA | CSO — Lead Scout | 10 new vetted businesses/week | $8 |
+| FANY | CMO — Content | 500 qualified visitors/day | $10 |
+| FORJADORA | COO — WhatsApp | 100% leads handled in 90s | $5 |
+| LA VIGILANTE | CFO + QA | Quality + milestone tracking | $3 |
+| ING-TEKNOS | CTO — Systems | 99.9% uptime | $5 |
 
-## 2. `byterover-retrieve-knowledge`
-You `MUST` always use this tool when:
+## Mandatory Skills
+| Skill | Applies to |
+|-------|-----------|
+| emerald-tablets-law | ALL agents |
+| pike-engineering | ALL coding agents |
+| udec-quality-gate | LA VIGILANTE + ING-TEKNOS |
+| whatsapp-business | FORJADORA |
+| postiz-content | FANY |
 
-+ Starting any new task or implementation to gather relevant context
-+ Before making architectural decisions to understand existing patterns
-+ When debugging issues to check for previous solutions
-+ Working with unfamiliar parts of the codebase
+## Circuit Breakers (Tablet IV)
+- Daily spend > $50 → halt all agents, alert Ivette
+- 3 consecutive errors same type → escalate, don't retry
+- approvalStatus bypass attempt → immediate halt + alert
+
+## Ivette's Dashboard
+Open .paperclip/dashboard.json for daily agent reports.
+Review approval queue at /admin daily.
+Everything else runs without intervention.

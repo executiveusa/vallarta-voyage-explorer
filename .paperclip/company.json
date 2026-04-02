@@ -1,0 +1,77 @@
+{
+  "company": {
+    "id": "verified-vallarta",
+    "name": "Verified Vallarta™",
+    "mission": "Generate $100,000 USD in revenue serving Puerto Vallarta hospitality market through verified business directory and AI-powered WhatsApp lead generation",
+    "board": "Ivette Milo",
+    "currency": "MXN",
+    "usd_target": 100000,
+    "paperclip_api": "http://localhost:3100"
+  },
+  "agents": [
+    {
+      "id": "synthia-prime",
+      "name": "SYNTHIA PRIME",
+      "role": "CEO",
+      "adapter": "claude-code",
+      "model": "claude-sonnet-4-6",
+      "daily_budget_usd": 50,
+      "heartbeat_hours": 6,
+      "goal": "Coordinate all agents toward $100K revenue milestone. Report daily to Ivette."
+    },
+    {
+      "id": "cazadora",
+      "name": "CAZADORA",
+      "role": "CSO",
+      "adapter": "claude-code",
+      "model": "claude-sonnet-4-6",
+      "daily_budget_usd": 8,
+      "heartbeat_hours": 12,
+      "goal": "Find 10 new PV businesses per week worth vetting. Add to approval queue. Never publish without Ivette approval.",
+      "tools": ["brightdata", "google-maps", "supabase-write-draft"],
+      "blast_radius": "RESEARCH_ONLY"
+    },
+    {
+      "id": "fany",
+      "name": "FANY",
+      "role": "CMO",
+      "adapter": "claude-code",
+      "model": "nemotron:latest",
+      "daily_budget_usd": 10,
+      "heartbeat_hours": 4,
+      "goal": "Post sunset photos and business spotlights across 25 platforms. Drive 500 qualified visitors/day to directory.",
+      "tools": ["postiz-mcp", "cloudinary", "ugc-feed"],
+      "blast_radius": "CONTENT_ONLY"
+    },
+    {
+      "id": "forjadora",
+      "name": "FORJADORA",
+      "role": "COO",
+      "adapter": "http-webhook",
+      "daily_budget_usd": 5,
+      "heartbeat_type": "event",
+      "heartbeat_trigger": "whatsapp_webhook",
+      "goal": "Handle 100% of inbound WhatsApp leads within 90 seconds. Qualify, capture, confirm. Send video review request 48h post-booking.",
+      "tools": ["whatsapp-cloud-api", "supabase-leads", "calendar-booking"],
+      "blast_radius": "COMMS_ONLY"
+    },
+    {
+      "id": "la-vigilante",
+      "name": "LA VIGILANTE",
+      "role": "CFO+QA",
+      "adapter": "claude-code",
+      "model": "claude-sonnet-4-6",
+      "daily_budget_usd": 3,
+      "heartbeat_hours": 24,
+      "goal": "Every listing >= 8.5 UDEC. Track $100K milestone. Run Karpathy autoresearch loop on conversion optimization nightly.",
+      "tools": ["synthia-udec-audit", "supabase-read", "git-commit-research"],
+      "blast_radius": "READ_FLAG_ONLY"
+    }
+  ],
+  "revenue_milestones": [
+    {"amount_usd": 2250, "label": "First $2,250 — 15 businesses"},
+    {"amount_usd": 10000, "label": "$10K — 50 businesses"},
+    {"amount_usd": 50000, "label": "$50K — 200 businesses + hotels"},
+    {"amount_usd": 100000, "label": "$100K MILESTONE"}
+  ]
+}
