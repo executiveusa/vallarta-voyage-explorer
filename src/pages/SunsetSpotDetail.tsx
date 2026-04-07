@@ -167,8 +167,8 @@ const SunsetSpotDetail = () => {
                   <Card key={listing.id} className="hover:shadow-md transition-shadow border-gray-200">
                     <CardContent className="p-4 flex gap-4 items-center">
                        <div className="w-20 h-20 rounded-lg bg-gray-200 flex-shrink-0 overflow-hidden">
-                         {listing.imageUrl ? (
-                           <img src={listing.imageUrl} alt={listing.name} className="w-full h-full object-cover" />
+                         {listing.imageUrls?.[0] ? (
+                            <img src={listing.imageUrls[0]} alt={listing.nameEn} className="w-full h-full object-cover" />
                          ) : (
                            <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
                              <MapPin className="w-8 h-8" />
@@ -176,7 +176,7 @@ const SunsetSpotDetail = () => {
                          )}
                        </div>
                        <div>
-                         <h4 className="font-bold text-gray-900">{listing.name}</h4>
+                         <h4 className="font-bold text-gray-900">{listing.nameEn}</h4>
                          <p className="text-sm text-gray-500 mb-1">{listing.category} • {listing.area}</p>
                          {listing.isFeatured && (
                            <span className="inline-flex items-center text-xs text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full font-medium">

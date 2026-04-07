@@ -142,7 +142,7 @@ const Sunsets = () => {
             </div>
 
             <div className="flex justify-center gap-4">
-              <ShareCardButton />
+              <ShareCardButton area="" imageUrl="" spotName="" isForecast />
               <UGCSubmissionModal />
             </div>
           </div>

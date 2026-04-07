@@ -1,13 +1,5 @@
 /**
  * Navbar — Verified Vallarta™
- *
- * Design: Transparent → navy glass on scroll
- * Logo: VV wordmark
- * Links: Directory | Sunsets | Tours | About
- * Right: Lang toggle + Claim CTA + Auth
- * Mobile: Full-screen navy overlay
- *
- * UDEC targets: TYP 9/10, CLR 9/10, ACC 9/10
  */
 
 import { useState, useEffect } from 'react'
@@ -31,13 +23,6 @@ export const Navbar = () => {
     return () => window.removeEventListener('scroll', handler)
   }, [])
 
-  const navLinks = [
-    { label: t('nav.directory'), to: '/directory' },
-    { label: t('nav.sunsets'), to: '/sunsets' },
-    { label: t('nav.tours'), href: '/#tours' },
-    { label: t('nav.about'), href: '/#about' },
-  ]
-
   return (
     <header
       className={cn(
@@ -59,7 +44,7 @@ export const Navbar = () => {
                 to="/directory"
                 className={cn(
                   "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                  isScrolled ? "text-gray-800" : "text-gray-900"
+                  scrolled ? "text-gray-800" : "text-gray-900"
                 )}
               >
                 Directory
@@ -70,7 +55,7 @@ export const Navbar = () => {
                 to="/sunsets"
                 className={cn(
                   "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                  isScrolled ? "text-gray-800" : "text-gray-900"
+                  scrolled ? "text-gray-800" : "text-gray-900"
                 )}
               >
                 Tracker
@@ -81,7 +66,7 @@ export const Navbar = () => {
                 href="/#tours"
                 className={cn(
                   "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                  isScrolled ? "text-gray-800" : "text-gray-900"
+                  scrolled ? "text-gray-800" : "text-gray-900"
                 )}
               >
                 Tours
@@ -92,13 +77,14 @@ export const Navbar = () => {
                 href="/#booking"
                 className={cn(
                   "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                  isScrolled ? "text-gray-800" : "text-gray-900"
+                  scrolled ? "text-gray-800" : "text-gray-900"
                 )}
               >
                 Book
               </a>
             </li>
           </ul>
+          <LangToggle />
           <UserMenuButton />
         </div>
 
@@ -113,71 +99,36 @@ export const Navbar = () => {
         </button>
       </nav>
 
-        {/* Mobile Menu */}
-        <div
-          className={cn(
-            "fixed inset-0 bg-white z-40 transform transition-transform duration-300 ease-in-out md:hidden pt-24 px-8",
-            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-          )}
-        >
-          <ul className="flex flex-col space-y-6">
-            <li>
-              <Link
-                to="/directory"
-                className="text-xl font-medium text-gray-800 hover:text-ocean-600"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Directory
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/sunsets"
-                className="text-xl font-medium text-gray-800 hover:text-ocean-600"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Tracker
-              </Link>
-            </li>
-            <li>
-              <a
-                href="/#tours"
-                className="text-xl font-medium text-gray-800 hover:text-ocean-600"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Tours
-              </a>
-            </li>
-            <li>
-              <a
-                href="/#booking"
-                className="text-xl font-medium text-gray-800 hover:text-ocean-600"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Book
-              </a>
-            </li>
-          </ul>
-          <div className="mt-8">
-            <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
-              <Button className="w-full bg-ocean-600 hover:bg-ocean-700 text-white rounded-full">
-                Sign In
-              </Button>
-            </Link>
-          ) : (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={() => setOpen(false)}
-              className="text-xl font-light tracking-widest uppercase hover:text-vv-gold transition-colors"
-              style={{ color: '#f5f0e8', letterSpacing: '0.25em', fontFamily: 'Cormorant Garamond, serif' }}
-            >
-              {link.label}
-            </a>
-          )
+      {/* Mobile Menu */}
+      <div
+        className={cn(
+          "fixed inset-0 bg-white z-40 transform transition-transform duration-300 ease-in-out md:hidden pt-24 px-8",
+          open ? "translate-x-0" : "translate-x-full"
         )}
-
-        <div className="flex items-center gap-4 mt-4">
+      >
+        <ul className="flex flex-col space-y-6">
+          <li>
+            <Link to="/directory" className="text-xl font-medium text-gray-800 hover:text-ocean-600" onClick={() => setOpen(false)}>
+              Directory
+            </Link>
+          </li>
+          <li>
+            <Link to="/sunsets" className="text-xl font-medium text-gray-800 hover:text-ocean-600" onClick={() => setOpen(false)}>
+              Tracker
+            </Link>
+          </li>
+          <li>
+            <a href="/#tours" className="text-xl font-medium text-gray-800 hover:text-ocean-600" onClick={() => setOpen(false)}>
+              Tours
+            </a>
+          </li>
+          <li>
+            <a href="/#booking" className="text-xl font-medium text-gray-800 hover:text-ocean-600" onClick={() => setOpen(false)}>
+              Book
+            </a>
+          </li>
+        </ul>
+        <div className="mt-8 flex items-center gap-4">
           <LangToggle />
           <Link to="/claim" onClick={() => setOpen(false)}>
             <Button

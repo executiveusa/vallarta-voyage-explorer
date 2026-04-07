@@ -4,88 +4,48 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CalendarIcon, Users, Phone, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom"; // Add useSearchParams
-import { supabase } from "@/integrations/supabase/client";
 
 const BookingSection = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [searchParams] = useSearchParams(); // Add search params
-  const attributedListingId = searchParams.get("listing_id");
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
-    email: user?.email || "",
+    email: "",
     phone: "",
     date: "",
     guests: "",
     message: "",
-    // Honeypot field (hidden from users)
     company_website: ""
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // 1. Honeypot check
     if (formData.company_website) {
-      // Spam detected - silently fail success
       toast.success("Your booking request has been sent! We'll contact you soon.");
       setFormData({ name: "", email: "", phone: "", date: "", guests: "", message: "", company_website: "" });
       setIsSubmitting(false);
       return;
     }
-    
-    // 2. Insert into Supabase
-    try {
-      const { data, error } = await supabase.functions.invoke('public-booking', {
-        body: {
-            ...formData,
-            source_path: window.location.pathname,
-            metadata: {
-               channel: 'form',
-               agent_suggested: false
-            },
-             // Honeypot handled in body automatically if mapped or we pass explicit
-            honeypot: (e.target as HTMLFormElement & { company_website?: HTMLInputElement }).company_website?.value 
-        }
-      });
 
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-
-      toast.success("Request received! Our concierge will contact you shortly.");
-      setFormData({ name: "", email: "", date: "", guests: "2", message: "" });
-      
-    } catch (error: unknown) {
-      console.error("Booking error:", error);
-      const msg = error instanceof Error && error.message?.includes('Too many') 
-         ? "Request limit reached. Please try later." 
-         : "Failed to submit request. Please try again.";
-      toast.error(msg);
-    } finally {
+    // Frontend-only: show success message
+    setTimeout(() => {
+      toast.success("Request received! Our concierge will contact you shortly via WhatsApp.");
+      setFormData({ name: "", email: "", phone: "", date: "", guests: "", message: "", company_website: "" });
       setIsSubmitting(false);
-    }
+    }, 1000);
   };
 
   return (
     <section id="booking" className="py-24 px-6 md:px-10">
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left side - Image */}
           <div className="rounded-3xl overflow-hidden h-[500px] shadow-2xl relative">
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
             <img 
@@ -101,7 +61,6 @@ const BookingSection = () => {
             </div>
           </div>
 
-          {/* Right side - Booking form */}
           <div>
             <div className="mb-10">
               <span className="text-sm font-medium text-ocean-600 tracking-wide uppercase">
@@ -116,7 +75,6 @@ const BookingSection = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-               {/* Honeypot Field - Hidden */}
                <div className="hidden">
                  <label htmlFor="company_website">Website</label>
                  <input
@@ -143,52 +101,22 @@ const BookingSection = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
-                  <Input
-                    placeholder="Email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    className="rounded-xl py-6 pl-10"
-                  />
+                  <Input placeholder="Email" type="email" name="email" value={formData.email} onChange={handleInputChange} required className="rounded-xl py-6 pl-10" />
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
                 <div className="relative">
-                  <Input
-                    placeholder="Phone"
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleInputChange}
-                    className="rounded-xl py-6 pl-10"
-                  />
+                  <Input placeholder="Phone" type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="rounded-xl py-6 pl-10" />
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
-                  <Input
-                    placeholder="Preferred Date"
-                    type="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                    className="rounded-xl py-6"
-                  />
+                  <Input placeholder="Preferred Date" type="date" name="date" value={formData.date} onChange={handleInputChange} className="rounded-xl py-6" />
                   <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
                 <div className="relative">
-                  <Input
-                    placeholder="Number of Guests"
-                    type="number"
-                    name="guests"
-                    value={formData.guests}
-                    onChange={handleInputChange}
-                    min="1"
-                    className="rounded-xl py-6 pl-10"
-                  />
+                  <Input placeholder="Number of Guests" type="number" name="guests" value={formData.guests} onChange={handleInputChange} min="1" className="rounded-xl py-6 pl-10" />
                   <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 </div>
               </div>
