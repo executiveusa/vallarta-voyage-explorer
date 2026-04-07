@@ -1,11 +1,25 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Send, X, Sparkles } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+
+const RESPONSES: Record<string, string> = {
+  book: "I'd love to help you book! Please use the booking form above or contact us via WhatsApp for personalized assistance.",
+  reserve: "I'd love to help you book! Please use the booking form above or contact us via WhatsApp for personalized assistance.",
+  sunset: "Puerto Vallarta sunsets are magical! Check out our Sunset Tracker page for the best spots and today's forecast.",
+  tour: "We offer amazing tours including sailing, zip-lining, whale watching, and more. Scroll down to see our featured experiences!",
+  restaurant: "The Romantic Zone and Malecón area have incredible dining options. Check our Directory for verified restaurants.",
+  default: "That sounds wonderful! I can help you find the best sunset spots or explore our directory. Check out our Directory or Sunset Tracker for more.",
+};
+
+function getBotReply(input: string): string {
+  const lower = input.toLowerCase();
+  for (const [key, reply] of Object.entries(RESPONSES)) {
+    if (key !== 'default' && lower.includes(key)) return reply;
+  }
+  return RESPONSES.default;
+}
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,10 +27,8 @@ const Chatbot = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
-    // Scroll to bottom of messages when new messages arrive
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
@@ -31,53 +43,14 @@ const Chatbot = () => {
     setInput('');
     setIsLoading(true);
 
-    // P8: Simple Client-Side Agent Routing Check (MVP)
-    // We intentionally bypass the edge function for this specific intent to demonstrate P8 logic purely in frontend for now.
-    const lowerInput = userText.toLowerCase();
-    
-    if (lowerInput.includes("book") || lowerInput.includes("reserve")) {
-       try {
-           setIsLoading(true); 
-           
-           // P8E: Use Edge Function for intake (Rate Limited)
-           const { data, error } = await supabase.functions.invoke('public-booking', {
-               body: {
-                   name: "Chat User", // Prompt later
-                   email: "pending_chat@example.com", // Prompt later
-                   message: `User said: "${userText}"`,
-                   metadata: {
-                       channel: 'chatbot',
-                       agent_suggested: true,
-                       confidence: 0.85
-                   }
-               }
-           });
-
-           if (error) throw error;
-           if (data?.error) throw new Error(data.error);
-
-           setMessages(prev => [...prev, { text: "I've passed your booking request to our concierge team. They will verify availability and reach out shortly!", sender: 'bot' }]);
-       } catch(e: unknown) {
-           console.error(e);
-           const msg = e instanceof Error && e.message?.includes('Too many') 
-             ? "You've reached the request limit. Please try again later."
-             : "Connection issue. Please use the main Booking form above.";
-           setMessages(prev => [...prev, { text: msg, sender: 'bot' }]);
-       }
-    } else {
-        // Fallback for non-booking intents (mock response for MVP, or keep existing if needed)
-        // For P8B we want to control this flow.
-        setTimeout(() => {
-             setMessages(prev => [...prev, { text: "That sounds wonderful! I can help you find the best sunset spots or book a private experience. Check out our Directory for more.", sender: 'bot' }]);
-        }, 1000);
-    }
-    
-    setIsLoading(false);
+    setTimeout(() => {
+      setMessages(prev => [...prev, { text: getBotReply(userText), sender: 'bot' }]);
+      setIsLoading(false);
+    }, 800);
   };
 
   return (
     <>
-      {/* Chatbot toggle button */}
       <Button 
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 right-6 rounded-full w-14 h-14 p-0 bg-ocean-600 hover:bg-ocean-700 shadow-lg z-50 flex items-center justify-center"
@@ -86,7 +59,6 @@ const Chatbot = () => {
         {!isOpen ? <MessageCircle className="h-6 w-6" /> : <X className="h-6 w-6" />}
       </Button>
 
-      {/* Chatbot panel */}
       {isOpen && (
         <div className="fixed bottom-24 right-6 w-80 md:w-96 bg-white rounded-lg shadow-xl z-50 flex flex-col overflow-hidden border border-gray-200 transition-all duration-300 ease-in-out">
           <div className="bg-gradient-to-r from-ocean-600 to-ocean-700 text-white px-4 py-4 flex justify-between items-center">

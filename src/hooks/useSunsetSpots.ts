@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 export type SpotVibe = 'Chill' | 'Party' | 'Romantic' | 'Crowded' | 'Adventure';
 export type AccessType = 'Public' | 'Private' | 'Restaurant' | 'Hike';
@@ -81,7 +80,7 @@ const MOCK_SPOTS: SunsetSpot[] = [
     imageUrl: "https://images.unsplash.com/photo-1590523277543-a94d2e4eb00b?q=80&w=1000&auto=format&fit=crop",
     vibe: "Adventure",
     accessType: "Hike",
-    bestTimeOffsetMinutes: -90, // Need time to get back!
+    bestTimeOffsetMinutes: -90,
     tips: ["Leave before it gets fully dark if hiking", "Water taxi is safer for return"]
   },
   {
@@ -130,46 +129,8 @@ export const useSunsetSpots = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchSpots() {
-      try {
-        const { data, error } = await supabase
-          .from('sunset_spots')
-          .select(`*, places(*)`);
-
-        if (error || !data || data.length === 0) {
-          console.warn('Using mock data for sunset spots due to empty DB or error:', error);
-          setSpots(MOCK_SPOTS);
-          return;
-        }
-
-        // Flatten the relationship for the UI
-        const flattenedSpots: SunsetSpot[] = data.map((item: Record<string, unknown> & { places: Record<string, unknown>; image_url?: string; vibe?: string; access_type?: string; best_time_offset_minutes?: number; tips?: string[] }) => ({
-          id: item.id,
-          slug: item.places.slug,
-          name: item.places.name,
-          description: item.places.description || "",
-          area: item.places.area,
-          coordinates: item.places.coordinates 
-            ? { lat: item.places.coordinates.coordinates[1], lng: item.places.coordinates.coordinates[0] } // Parse PostGIS Point
-            : { lat: 0, lng: 0 },
-          imageUrl: item.image_url || "",
-          vibe: item.vibe as SpotVibe,
-          accessType: item.access_type as AccessType,
-          bestTimeOffsetMinutes: item.best_time_offset_minutes || 0,
-          tips: item.tips || []
-        }));
-
-        setSpots(flattenedSpots);
-        
-      } catch (err) {
-        console.error('Supabase fetch error, fallback to mock:', err);
-        setSpots(MOCK_SPOTS);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchSpots();
+    setSpots(MOCK_SPOTS);
+    setLoading(false);
   }, []);
 
   const getSpotBySlug = (slug: string) => {
