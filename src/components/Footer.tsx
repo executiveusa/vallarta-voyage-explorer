@@ -120,7 +120,7 @@ export default function Footer() {
         {/* Bottom section */}
         <div className="pt-10 border-t border-gray-800 text-center md:text-left md:flex md:justify-between text-gray-500 text-sm">
           <div>
-            <p>© {currentYear} Sunset Vallarta. All rights reserved.</p>
+            <p><p>© {new Date().getFullYear()} Sunset Vallarta. All rights reserved.</p></p>
           </div>
           <div className="mt-4 md:mt-0 space-x-6">
             <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>

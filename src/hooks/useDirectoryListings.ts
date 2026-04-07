@@ -1,15 +1,9 @@
 /**
  * useDirectoryListings — Verified Vallarta™
- *
- * Reads from Supabase businesses table.
- * Only returns APPROVED businesses (RLS enforced + client filter).
- * Falls back to empty array if Supabase unavailable.
- *
- * Tablet III: Only verified businesses appear. Always.
+ * Frontend-only with static mock data.
  */
 
 import { useState, useEffect } from 'react'
-import { supabase } from '@/integrations/supabase/client'
 
 export interface DirectoryListing {
   id: string
@@ -38,34 +32,60 @@ export interface DirectoryListing {
   nonprofitPartner: boolean
 }
 
-function mapRow(row: Record<string, unknown>): DirectoryListing {
-  return {
-    id: String(row.id),
-    nameEn: String(row.name_en),
-    nameEs: String(row.name_es),
-    slug: String(row.slug),
-    descriptionEn: String(row.description_en || ''),
-    descriptionEs: String(row.description_es || ''),
-    category: String(row.category),
-    area: String(row.area),
-    phone: row.phone ? String(row.phone) : null,
-    whatsappNumber: row.whatsapp_number ? String(row.whatsapp_number) : null,
-    website: row.website ? String(row.website) : null,
-    verified: Boolean(row.verified),
-    verifiedBy: row.verified_by ? String(row.verified_by) : null,
-    approvalStatus: String(row.approval_status),
-    imageUrls: (row.image_urls as string[]) || [],
-    sunsetView: Boolean(row.sunset_view),
-    luxuryTier: Number(row.luxury_tier) || 3,
-    priceRange: String(row.price_range || '$$$'),
-    bestPhases: (row.best_phases as string[]) || ['day', 'golden', 'night'],
-    goldenHourSpecial: row.golden_hour_special ? String(row.golden_hour_special) : null,
-    isFeatured: Boolean(row.is_featured),
-    videoReviewCount: Number(row.video_review_count) || 0,
-    avgRating: Number(row.avg_rating) || 0,
-    nonprofitPartner: Boolean(row.nonprofit_partner),
-  }
-}
+const MOCK_LISTINGS: DirectoryListing[] = [
+  {
+    id: '1',
+    nameEn: 'La Palapa Restaurant',
+    nameEs: 'Restaurante La Palapa',
+    slug: 'la-palapa',
+    descriptionEn: 'Iconic beachfront dining in the Romantic Zone with stunning sunset views.',
+    descriptionEs: 'Restaurante icónico frente al mar en la Zona Romántica con vistas al atardecer.',
+    category: 'Restaurant',
+    area: 'Romantic Zone',
+    phone: '+52 322 222 5225',
+    whatsappNumber: '+52 322 222 5225',
+    website: 'https://lapalapa.com',
+    verified: true,
+    verifiedBy: 'Ivette',
+    approvalStatus: 'APPROVED',
+    imageUrls: ['https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=1000'],
+    sunsetView: true,
+    luxuryTier: 4,
+    priceRange: '$$$',
+    bestPhases: ['golden', 'night'],
+    goldenHourSpecial: 'Complimentary sunset cocktail',
+    isFeatured: true,
+    videoReviewCount: 12,
+    avgRating: 4.8,
+    nonprofitPartner: false,
+  },
+  {
+    id: '2',
+    nameEn: 'Vallarta Adventures',
+    nameEs: 'Aventuras Vallarta',
+    slug: 'vallarta-adventures',
+    descriptionEn: 'Premium adventure tours including zip-lining, sailing, and whale watching.',
+    descriptionEs: 'Tours de aventura premium incluyendo tirolesa, veleros y avistamiento de ballenas.',
+    category: 'Experience',
+    area: 'Marina Vallarta',
+    phone: '+52 322 226 8413',
+    whatsappNumber: '+52 322 226 8413',
+    website: 'https://vallarta-adventures.com',
+    verified: true,
+    verifiedBy: 'Ivette',
+    approvalStatus: 'APPROVED',
+    imageUrls: ['https://images.unsplash.com/photo-1530053969600-caed2596d242?q=80&w=1000'],
+    sunsetView: true,
+    luxuryTier: 5,
+    priceRange: '$$$$',
+    bestPhases: ['day', 'golden'],
+    goldenHourSpecial: 'Sunset sailing tour',
+    isFeatured: true,
+    videoReviewCount: 24,
+    avgRating: 4.9,
+    nonprofitPartner: true,
+  },
+]
 
 export function useDirectoryListings(filters?: {
   category?: string
@@ -78,52 +98,27 @@ export function useDirectoryListings(filters?: {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let cancelled = false
+    let filtered = [...MOCK_LISTINGS]
 
-    async function fetchListings() {
-      try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let query = (supabase as any)
-          .from('businesses')
-          .select('*')
-          .eq('approval_status', 'APPROVED')
-          .eq('is_active', true)
-          .eq('verified', true)
-          .order('is_featured', { ascending: false })
-          .order('luxury_tier', { ascending: false })
-
-        if (filters?.category && filters.category !== 'All') {
-          query = query.eq('category', filters.category)
-        }
-        if (filters?.featured) {
-          query = query.eq('is_featured', true)
-        }
-        if (filters?.search) {
-          query = query.or(
-            `name_en.ilike.%${filters.search}%,name_es.ilike.%${filters.search}%,description_en.ilike.%${filters.search}%,area.ilike.%${filters.search}%`
-          )
-        }
-
-        const { data, error: sbError } = await query
-
-        if (cancelled) return
-        if (sbError) throw sbError
-
-        setListings((data || []).map(mapRow))
-        setError(null)
-      } catch (err) {
-        if (cancelled) return
-        console.error('[useDirectoryListings] Supabase error:', err)
-        setError('Could not load listings')
-        setListings([])
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
+    if (filters?.category && filters.category !== 'All') {
+      filtered = filtered.filter(l => l.category === filters.category)
+    }
+    if (filters?.featured) {
+      filtered = filtered.filter(l => l.isFeatured)
+    }
+    if (filters?.search) {
+      const q = filters.search.toLowerCase()
+      filtered = filtered.filter(l =>
+        l.nameEn.toLowerCase().includes(q) ||
+        l.nameEs.toLowerCase().includes(q) ||
+        l.descriptionEn.toLowerCase().includes(q) ||
+        l.area.toLowerCase().includes(q)
+      )
     }
 
-    fetchListings()
-    return () => { cancelled = true }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setListings(filtered)
+    setError(null)
+    setLoading(false)
   }, [filters?.category, filters?.phase, filters?.featured, filters?.search])
 
   return { listings, loading, error }

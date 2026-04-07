@@ -1,12 +1,6 @@
 /**
  * ClaimListing — Verified Vallarta™
- *
- * Business owners apply for a verified listing.
- * Ivette reviews every application before approving.
- * Nonprofit pledge option → immediate 25% discount.
- *
- * Tablet III: Ivette approves. Always.
- * Tablet VII: Nonprofit pledge tracked and honored.
+ * Frontend-only version - form submits show confirmation.
  */
 
 import { useState } from 'react'
@@ -19,7 +13,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useLang } from '@/context/LanguageContext'
-import { supabase } from '@/integrations/supabase/client'
 
 type PricingTier = 'demo' | 'base' | 'pro' | 'hotel'
 
@@ -85,42 +78,11 @@ export default function ClaimListing() {
     setSubmitting(true)
     setError(null)
 
-    try {
-      const slug = form.businessName
-        .toLowerCase()
-        .replace(/\s+/g, '-')
-        .replace(/[^a-z0-9-]/g, '')
-        + '-' + Date.now().toString(36)
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { error: insertError } = await (supabase as any).from('businesses').insert({
-        name_en:            form.businessName,
-        name_es:            form.businessName,
-        slug,
-        description_en:     form.description,
-        description_es:     form.description,
-        category:           form.category,
-        area:               form.area || 'Puerto Vallarta',
-        phone:              form.phone,
-        whatsapp_number:    form.whatsapp || form.phone,
-        email:              form.email,
-        website:            form.website,
-        verification_notes: `Owner: ${form.ownerName} | Tier: ${tier} | Nonprofit: ${nonprofit}`,
-        approval_status:    'PENDING',
-        verified:           false,
-        subscription_tier:  tier,
-        nonprofit_partner:  nonprofit,
-        nonprofit_pledge_usd: nonprofit ? 50 : null,
-      })
-
-      if (insertError) throw insertError
+    // Frontend-only: simulate submission
+    setTimeout(() => {
       setSubmitted(true)
-    } catch (err) {
-      console.error('[ClaimListing] Submit error:', err)
-      setError(isEs ? 'Error al enviar. Intenta de nuevo.' : 'Error submitting. Please try again.')
-    } finally {
       setSubmitting(false)
-    }
+    }, 1000)
   }
 
   if (submitted) {
@@ -154,7 +116,6 @@ export default function ClaimListing() {
       <main className="flex-grow pt-24 pb-20 px-4 md:px-8">
         <div className="max-w-4xl mx-auto">
 
-          {/* Header */}
           <div className="text-center mb-14">
             <div className="flex justify-center mb-6">
               <VerifiedBadge size="lg" />
@@ -179,7 +140,6 @@ export default function ClaimListing() {
 
           <div className="grid lg:grid-cols-2 gap-10">
 
-            {/* Form */}
             <div className="space-y-5">
               <h2
                 className="font-bold tracking-widest uppercase"
@@ -241,7 +201,6 @@ export default function ClaimListing() {
               </div>
             </div>
 
-            {/* Pricing */}
             <div className="space-y-5">
               <h2
                 className="font-bold tracking-widest uppercase"
@@ -297,7 +256,6 @@ export default function ClaimListing() {
                 })}
               </div>
 
-              {/* Nonprofit toggle */}
               <div
                 className="p-4 rounded-2xl cursor-pointer transition-all"
                 style={{
