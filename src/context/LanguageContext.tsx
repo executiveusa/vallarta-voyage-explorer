@@ -90,7 +90,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLang = (l: Lang) => {
     setLangState(l)
-    try { localStorage.setItem('vv-lang', l) } catch {}
+    try { localStorage.setItem('vv-lang', l) } catch (_) { /* storage unavailable */ }
   }
 
   const t = (key: string): string => {

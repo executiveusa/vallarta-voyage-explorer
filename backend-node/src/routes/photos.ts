@@ -21,7 +21,7 @@ app.get('/', async (c) => {
   try {
     const params = listPhotosSchema.parse(Object.fromEntries(c.req.queries()));
     
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     
     if (params.phase) {
       where.phase = params.phase;

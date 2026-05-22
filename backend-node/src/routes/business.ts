@@ -24,7 +24,7 @@ app.get('/', async (c) => {
   try {
     const params = listBusinessesSchema.parse(Object.fromEntries(c.req.queries()));
     
-    const where: any = {
+    const where: Record<string, unknown> = {
       isActive: true,
       approvalStatus: 'APPROVED',
       optedOut: false

@@ -10,7 +10,7 @@ export function buildWhatsAppLink(
   phoneNumber: string,
   prefillMessage: string,
 ): string {
-  const cleaned = phoneNumber.replace(/[\s\-\(\)]/g, '')
+  const cleaned = phoneNumber.replace(/[\s\-()/]/g, '')
   const number = cleaned.startsWith('+') ? cleaned.slice(1) : cleaned
   const encoded = encodeURIComponent(prefillMessage)
   return `https://wa.me/${number}?text=${encoded}`

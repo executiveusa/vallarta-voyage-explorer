@@ -17,7 +17,7 @@ app.post('/submit', async (c) => {
       email: z.string().email(),
       name: z.string().optional(),
       phone: z.string().optional(),
-      answers: z.record(z.any()),
+      answers: z.record(z.unknown()),
       locale: z.enum(['en', 'es']).optional()
     });
     
@@ -73,23 +73,23 @@ app.post('/submit', async (c) => {
 });
 
 // Helper functions for scoring
-function calculateLuxuryScore(answers: Record<string, any>): number {
+function calculateLuxuryScore(answers: Record<string, unknown>): number {
   // TODO: Implement based on specific questions
   // For now, return a placeholder
   return Math.floor(Math.random() * 100);
 }
 
-function calculateAdventureScore(answers: Record<string, any>): number {
+function calculateAdventureScore(answers: Record<string, unknown>): number {
   // TODO: Implement based on specific questions
   return Math.floor(Math.random() * 100);
 }
 
-function calculateCulturalScore(answers: Record<string, any>): number {
+function calculateCulturalScore(answers: Record<string, unknown>): number {
   // TODO: Implement based on specific questions
   return Math.floor(Math.random() * 100);
 }
 
-function determineSegment(answers: Record<string, any>): 'B2B' | 'B2C_LUXURY' | 'B2C_BUDGET' {
+function determineSegment(answers: Record<string, unknown>): 'B2B' | 'B2C_LUXURY' | 'B2C_BUDGET' {
   // TODO: Implement based on specific questions
   // Check if they identified as hotel/venue owner
   const isBusinessOwner = answers['q1'] === 'business_owner' || answers['role'] === 'hotel_manager';
