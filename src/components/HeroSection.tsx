@@ -1,172 +1,161 @@
 /**
- * HeroSection — Living Sunset Engine
+ * HeroSection - the real sunset.
+ * Sky is driven by actual Puerto Vallarta sun times (sunrise-sunset.org, NOAA fallback)
+ * and MET Norway cloud cover. No stock photos, no stats, no claims we cannot prove.
  */
-
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ChevronDown } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Link } from 'react-router-dom'
 import { useLang } from '@/context/LanguageContext'
+import { useSunState } from '@/hooks/useSunState'
+import SunArc from '@/components/hero/SunArc'
+import { formatPvTime, type Phase } from '@/lib/sun'
 
-type SunPhase = 'day' | 'golden' | 'night'
-
-interface SunData {
-  phase: SunPhase
-  minutesToSunset: number | null
+const SKY: Record<Phase, string> = {
+  day: 'linear-gradient(180deg,#1d5f9c 0%,#2f78b3 55%,#4f8fbd 100%)',
+  dawn: 'linear-gradient(180deg,#2a3a63 0%,#b5688a 55%,#f3b07a 100%)',
+  golden: 'linear-gradient(180deg,#2f4d80 0%,#b8683f 58%,#d99a52 100%)',
+  dusk: 'linear-gradient(180deg,#141d3b 0%,#5a3b66 60%,#c4627a 100%)',
+  night: 'linear-gradient(180deg,#050a18 0%,#0b1630 70%,#13213f 100%)',
 }
 
-function getSunData(): SunData {
-  const now = new Date()
-  const pvHour = ((now.getUTCHours() - 6) + 24) % 24
-  const pvMinutes = now.getUTCMinutes()
-  const pvTimeDecimal = pvHour + pvMinutes / 60
-  const sunsetHour = 19.0
-  const goldenStart = sunsetHour - 1.5
-  const nightStart = sunsetHour + 0.5
+const T = {
+  en: {
+    h1: 'Puerto Vallarta, honestly.',
+    sub: 'A local guide for visitors. We list a place only after we have checked it, and we say how we check. Nothing is listed yet while we verify the first businesses.',
+    cta: 'Browse the directory',
+    sunsetToday: 'Sunset today',
+    sunriseToday: 'Sunrise',
+    toSunset: 'until sunset',
+    toSunrise: 'until sunrise',
+    clouds: 'cloud cover',
+    sources: 'Sun times',
+    weatherSrc: 'Weather',
+    arcLabel: 'Sun path today, golden hour highlighted',
+    phase: { day: 'Daytime', dawn: 'Dawn', golden: 'Golden hour', dusk: 'Dusk', night: 'Night' },
+  },
+  es: {
+    h1: 'Puerto Vallarta, con honestidad.',
+    sub: 'Una guía local para visitantes. Solo listamos un lugar después de revisarlo, y explicamos cómo lo revisamos. Por ahora no hay negocios listados mientras verificamos los primeros.',
+    cta: 'Ver el directorio',
+    sunsetToday: 'Atardecer hoy',
+    sunriseToday: 'Amanecer',
+    toSunset: 'para el atardecer',
+    toSunrise: 'para el amanecer',
+    clouds: 'nubosidad',
+    sources: 'Horas del sol',
+    weatherSrc: 'Clima',
+    arcLabel: 'Trayectoria del sol hoy, con la hora dorada resaltada',
+    phase: { day: 'Día', dawn: 'Amanecer', golden: 'Hora dorada', dusk: 'Anochecer', night: 'Noche' },
+  },
+} as const
 
-  let phase: SunPhase
-  let minutesToSunset: number | null = null
-
-  if (pvTimeDecimal >= goldenStart && pvTimeDecimal < nightStart) {
-    phase = 'golden'
-    minutesToSunset = Math.max(0, Math.round((sunsetHour - pvTimeDecimal) * 60))
-  } else if (pvTimeDecimal >= nightStart || pvTimeDecimal < 5) {
-    phase = 'night'
-  } else {
-    phase = 'day'
-    if (pvTimeDecimal < sunsetHour) {
-      minutesToSunset = Math.round((sunsetHour - pvTimeDecimal) * 60)
-    }
-  }
-
-  return { phase, minutesToSunset }
-}
-
-const PHASE_CONFIG = {
-  day: {
-    bg: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=2073&auto=format&fit=crop',
-    overlay: 'linear-gradient(180deg, rgba(10,22,40,0.5) 0%, rgba(10,22,40,0.2) 40%, rgba(10,22,40,0.7) 100%)',
-    accentColor: '#38bdf8',
-  },
-  golden: {
-    bg: 'https://images.unsplash.com/photo-1555246718-89f3da74553c?q=80&w=2070&auto=format&fit=crop',
-    overlay: 'linear-gradient(180deg, rgba(10,22,40,0.4) 0%, rgba(120,53,15,0.15) 40%, rgba(10,22,40,0.8) 100%)',
-    accentColor: '#c9a84c',
-  },
-  night: {
-    bg: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop',
-    overlay: 'linear-gradient(180deg, rgba(10,22,40,0.6) 0%, rgba(10,22,40,0.35) 40%, rgba(10,22,40,0.9) 100%)',
-    accentColor: '#8b5cf6',
-  },
-}
-
-const PHASE_COPY = {
-  day: {
-    es: { eyebrow: 'Puerto Vallarta · Verificado', title: ['Verified', 'Vallarta™'], subtitle: 'El directorio de lujo verificado.\nSolo lugares reales.', cta1: 'Ver Directorio', cta2: 'Tracker de Atardecer' },
-    en: { eyebrow: 'Puerto Vallarta · Verified', title: ['Verified', 'Vallarta™'], subtitle: 'The verified luxury directory.\nReal places only.', cta1: 'Browse Directory', cta2: 'Sunset Tracker' },
-  },
-  golden: {
-    es: { eyebrow: '🌅 La Hora Mágica · Ahora', title: ['Atardecer', 'en'], subtitle: 'Los mejores spots para la puesta de sol.\nSube tu foto. Gana premios.', cta1: 'Ver Spots', cta2: 'Subir Mi Foto' },
-    en: { eyebrow: '🌅 Golden Hour · Now', title: ['Sunset', 'in'], subtitle: 'The best sunset spots in Vallarta.\nUpload your photo. Win prizes.', cta1: 'See Spots', cta2: 'Upload Photo' },
-  },
-  night: {
-    es: { eyebrow: 'Esta Noche · Vallarta', title: ['La Noche', 'Te Espera'], subtitle: 'Rooftops, restaurantes y experiencias.\nTodo verificado por nuestro equipo.', cta1: 'Ver Negocios Nocturnos', cta2: 'Mapa Interactivo' },
-    en: { eyebrow: 'Tonight · Vallarta', title: ['Nightlife', 'Awaits'], subtitle: 'Rooftops, restaurants, and experiences.\nAll personally verified.', cta1: 'See Nightlife', cta2: 'Interactive Map' },
-  },
+function hms(ms: number) {
+  const s = Math.max(0, Math.floor(ms / 1000))
+  const p = (n: number) => String(n).padStart(2, '0')
+  return `${p(Math.floor(s / 3600))}:${p(Math.floor((s % 3600) / 60))}:${p(s % 60)}`
 }
 
 export default function HeroSection() {
-  const navigate = useNavigate()
   const { lang } = useLang()
-  const [sunData, setSunData] = useState<SunData>(getSunData())
+  const t = T[lang]
+  const { now, times, weather, phase } = useSunState()
 
-  useEffect(() => {
-    const id = setInterval(() => setSunData(getSunData()), 60000)
-    return () => clearInterval(id)
-  }, [])
-
-  const { phase } = sunData
-  const config = PHASE_CONFIG[phase]
-  const copy = PHASE_COPY[phase][lang]
-
-  const scrollToTours = () => {
-    document.getElementById('booking')?.scrollIntoView({ behavior: 'smooth' })
-  }
+  const beforeSunset = now < times.sunset
+  const countdown = beforeSunset
+    ? hms(times.sunset.getTime() - now.getTime())
+    : null
+  const nightOverlay = phase === 'night' || phase === 'dusk'
+  const cloudy = weather ? Math.min(0.45, (weather.cloudPct / 100) * 0.45) : 0
 
   return (
-    <section className="relative min-h-[100dvh] w-full overflow-hidden flex flex-col justify-center items-center">
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 z-10" style={{ background: config.overlay }} />
-        <img
-          src={config.bg}
-          alt="Puerto Vallarta sunset"
-          className="object-cover w-full h-full"
-          loading="eager"
-        />
-      </div>
-
-      <div className="relative z-20 text-center px-6 max-w-4xl mx-auto">
-        <div
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8"
-          style={{
-            background: 'rgba(10,22,40,0.7)',
-            backdropFilter: 'blur(12px)',
-            border: `1px solid ${config.accentColor}40`,
-            color: config.accentColor,
-            letterSpacing: '0.2em',
-            fontSize: '9px',
-            fontWeight: 600,
-            textTransform: 'uppercase',
-          }}
-        >
-          <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: config.accentColor }} />
-          {copy.eyebrow}
-        </div>
-
-        <h1
-          className="text-5xl md:text-7xl font-semibold mb-6"
-          style={{ fontFamily: 'Cormorant Garamond, serif', color: '#f5f0e8' }}
-        >
-          {copy.title[0]}<br />{copy.title[1]}
-        </h1>
-
-        <p className="text-base md:text-lg mb-10 whitespace-pre-line" style={{ color: 'rgba(245,240,232,0.7)' }}>
-          {copy.subtitle}
-        </p>
-
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            size="lg"
-            className="bg-ocean-600 hover:bg-ocean-700 text-white rounded-xl px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
-            onClick={scrollToTours}
-          >
-            {copy.cta1}
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="bg-transparent border-white text-white hover:bg-white/10 rounded-xl px-8 py-6 text-lg backdrop-blur-sm"
-            onClick={() => navigate("/sunsets")}
-          >
-            {copy.cta2}
-          </Button>
-        </div>
-
-        <div className="mt-10 flex items-center gap-3 justify-center">
-          <div className="h-px w-12 opacity-30" style={{ background: '#c9a84c' }} />
-          <span style={{ color: 'rgba(201,168,76,0.7)', fontSize: '9px', letterSpacing: '0.35em', textTransform: 'uppercase' }}>
-            Solo lugares verificados
-          </span>
-          <div className="h-px w-12 opacity-30" style={{ background: '#c9a84c' }} />
-        </div>
-      </div>
-
+    <section
+      className="relative min-h-[100dvh] w-full overflow-hidden"
+      style={{ background: SKY[phase] }}
+      aria-label={t.phase[phase]}
+    >
       <div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
-        onClick={() => document.getElementById('directory')?.scrollIntoView({ behavior: 'smooth' })}
-      >
-        <ChevronDown className="w-8 h-8 text-vv-cream" />
+        className="absolute inset-0 pointer-events-none"
+        style={{ background: `rgba(120,130,145,${cloudy})`, mixBlendMode: 'multiply' }}
+      />
+      <div
+        className="absolute inset-x-0 bottom-0 h-72 pointer-events-none"
+        style={{ background: 'linear-gradient(180deg,transparent,rgba(5,10,24,0.6))' }}
+      />
+
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-6xl flex-col justify-end gap-10 px-6 pb-14 pt-32 md:flex-row md:items-end md:justify-between md:px-10 md:pb-20">
+        <div className="max-w-xl">
+          <p className="mb-5 text-xs font-semibold uppercase tracking-[0.25em] text-[#f5f0e8]/80">
+            Verified Vallarta · {t.phase[phase]}
+          </p>
+          <h1
+            className="mb-5 text-5xl font-semibold leading-[1.05] text-[#f5f0e8] md:text-7xl"
+            style={{ fontFamily: 'Cormorant Garamond, serif', textShadow: '0 2px 24px rgba(0,0,0,0.35)' }}
+          >
+            {t.h1}
+          </h1>
+          <p className="mb-8 text-base leading-relaxed text-[#f5f0e8]/90 md:text-lg" style={{ textShadow: '0 1px 12px rgba(0,0,0,0.4)' }}>
+            {t.sub}
+          </p>
+          <Link
+            to="/directory"
+            className="inline-flex items-center rounded-full bg-[#f5f0e8] px-8 py-4 text-base font-semibold text-[#0b1630] transition-colors hover:bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1630]"
+          >
+            {t.cta}
+          </Link>
+        </div>
+
+        <aside
+          className="w-full max-w-xs rounded-2xl p-5 text-[#f5f0e8] md:w-80"
+          style={{ background: 'rgba(5,10,24,0.62)' }}
+        >
+          <SunArc times={times} now={now} label={t.arcLabel} />
+          <dl className="mt-3 space-y-1 text-sm">
+            <div className="flex justify-between">
+              <dt className="opacity-80">{t.sunriseToday}</dt>
+              <dd className="font-medium tabular-nums">{formatPvTime(times.sunrise, lang)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="opacity-80">{t.sunsetToday}</dt>
+              <dd className="font-medium tabular-nums">{formatPvTime(times.sunset, lang)}</dd>
+            </div>
+          </dl>
+          {countdown && (
+            <p className="mt-3 text-2xl font-semibold tabular-nums">
+              {countdown} <span className="text-sm font-normal opacity-80">{t.toSunset}</span>
+            </p>
+          )}
+          {weather && (
+            <p className="mt-1 text-sm opacity-90">
+              {Math.round(weather.tempC)}°C · {Math.round(weather.cloudPct)}% {t.clouds}
+            </p>
+          )}
+          <p className="mt-4 text-[11px] leading-snug opacity-75">
+            {t.sources}:{' '}
+            {times.source === 'NOAA' ? (
+              'NOAA'
+            ) : (
+              <a className="underline" href="https://sunrise-sunset.org/" target="_blank" rel="noreferrer">
+                sunrise-sunset.org
+              </a>
+            )}
+            {' · '}
+            {t.weatherSrc}:{' '}
+            <a className="underline" href="https://www.met.no/en" target="_blank" rel="noreferrer">
+              MET Norway
+            </a>{' '}
+            (CC BY 4.0)
+          </p>
+        </aside>
       </div>
+      {nightOverlay && (
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none opacity-60"
+          style={{
+            backgroundImage:
+              'radial-gradient(1.2px 1.2px at 12% 18%,#fff,transparent),radial-gradient(1px 1px at 33% 9%,#fff,transparent),radial-gradient(1.4px 1.4px at 58% 22%,#fff,transparent),radial-gradient(1px 1px at 77% 12%,#fff,transparent),radial-gradient(1.2px 1.2px at 90% 28%,#fff,transparent),radial-gradient(1px 1px at 45% 30%,#fff,transparent)',
+          }}
+        />
+      )}
     </section>
   )
 }
