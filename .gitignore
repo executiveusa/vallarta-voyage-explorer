@@ -35,3 +35,11 @@ dist-ssr
 .env.local
 .env*.local
 .env.production
+
+# Secrets and local env (never commit)
+.env
+.env.*
+!.env.example
+ntn_*
+*.pem
+*.key
