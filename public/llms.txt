@@ -8,7 +8,7 @@
   - Endpoint: /sunset-spots/:slug
   - Context: Vibe, Crowds, Best Time
   
-- **Directory**: Vetted local partners.
+- **Directory**: Local partners (none listed yet).
   - Endpoint: /directory
   - Categories: Food & Drink, Wellness, Experiences
 

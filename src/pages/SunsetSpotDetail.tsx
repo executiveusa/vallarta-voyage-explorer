@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Chatbot from "@/components/Chatbot";
 import { ApprovedFeed } from "@/components/ApprovedFeed";
 import { useSunsetSpots } from "@/hooks/useSunsetSpots";
 import { useDirectoryListings } from "@/hooks/useDirectoryListings";
@@ -220,7 +219,6 @@ const SunsetSpotDetail = () => {
       </main>
       
       <Footer />
-      <Chatbot />
     </div>
   );
 };

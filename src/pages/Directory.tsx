@@ -69,7 +69,7 @@ export default function Directory() {
             >
               {isEs
                 ? 'Cada negocio vetado personalmente por nuestro equipo. Solo lugares reales.'
-                : 'Every business personally vetted by our team. Real places only.'}
+                : 'Real places only. Listings appear here once they are reviewed.'}
             </p>
             <VerifiedBadge size="lg" />
           </div>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Chatbot from "@/components/Chatbot";
 import { useSunsetSpots } from "@/hooks/useSunsetSpots";
 import { useShareCard } from "@/hooks/useShareCard";
 import { UGCSubmissionModal } from "@/components/UGCSubmissionModal";
@@ -243,7 +242,6 @@ const Sunsets = () => {
       </main>
 
       <Footer />
-      <Chatbot />
     </div>
   );
 };
