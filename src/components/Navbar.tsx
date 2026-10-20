@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getSiteWhatsAppNumber } from '@/lib/whatsapp'
 import { cn } from '@/lib/utils'
 import { VVLogo } from '@/components/VVLogo'
 import { LangToggle } from '@/components/LangToggle'
@@ -44,7 +45,7 @@ export const Navbar = () => {
                 to="/directory"
                 className={cn(
                   "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                  scrolled ? "text-gray-800" : "text-gray-900"
+                  "text-[#f5f0e8]"
                 )}
               >
                 Directory
@@ -55,23 +56,13 @@ export const Navbar = () => {
                 to="/sunsets"
                 className={cn(
                   "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                  scrolled ? "text-gray-800" : "text-gray-900"
+                  "text-[#f5f0e8]"
                 )}
               >
                 Tracker
               </Link>
             </li>
-            <li>
-              <a
-                href="/#booking"
-                className={cn(
-                  "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                  scrolled ? "text-gray-800" : "text-gray-900"
-                )}
-              >
-                Book
-              </a>
-            </li>
+            {getSiteWhatsAppNumber() && (<li><a href="/#booking" className="font-medium text-[#f5f0e8] hover:text-white">Book</a></li>)}
           </ul>
           <LangToggle />
           <UserMenuButton />
@@ -84,7 +75,7 @@ export const Navbar = () => {
           aria-label="Toggle menu"
           style={{ color: '#f5f0e8' }}
         >
-          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6 text-[#f5f0e8]" />}
         </button>
       </nav>
 
@@ -107,11 +98,6 @@ export const Navbar = () => {
             </Link>
           </li>
           <li>
-          </li>
-          <li>
-            <a href="/#booking" className="text-xl font-medium text-gray-800 hover:text-ocean-600" onClick={() => setOpen(false)}>
-              Book
-            </a>
           </li>
         </ul>
         <div className="mt-8 flex items-center gap-4">
