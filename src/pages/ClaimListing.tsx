@@ -78,11 +78,11 @@ export default function ClaimListing() {
     setSubmitting(true)
     setError(null)
 
-    // Frontend-only: simulate submission
-    setTimeout(() => {
-      setSubmitted(true)
-      setSubmitting(false)
-    }, 1000)
+    // No backend is connected yet, so nothing can be received. Say so.
+    setError(isEs
+      ? 'Las solicitudes aun no estan abiertas. Vuelve pronto.'
+      : 'Applications are not open yet. Please check back soon.')
+    setSubmitting(false)
   }
 
   if (submitted) {
@@ -134,7 +134,7 @@ export default function ClaimListing() {
             <p className="max-w-lg mx-auto text-sm" style={{ color: 'rgba(245,240,232,0.45)' }}>
               {isEs
                 ? 'Únete al directorio verificado de Puerto Vallarta. Solo negocios reales, vetados por nuestro equipo.'
-                : "Join Puerto Vallarta's verified directory. Real businesses only, vetted by our team."}
+                : "Join Puerto Vallarta's verified directory. Real businesses only."}
             </p>
           </div>
 

@@ -1,148 +1,42 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon, Users, Phone, Mail, Send } from "lucide-react";
-import { toast } from "sonner";
+import { MessageCircle } from "lucide-react";
+import { useLang } from "@/context/LanguageContext";
+import { buildWhatsAppLink, getSiteWhatsAppNumber } from "@/lib/whatsapp";
 
+/**
+ * Contact section. WhatsApp only: no form that pretends to send anything.
+ * Renders nothing until VITE_WHATSAPP_NUMBER is set.
+ */
 const BookingSection = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    date: "",
-    guests: "",
-    message: "",
-    company_website: ""
-  });
+  const { lang } = useLang();
+  const number = getSiteWhatsAppNumber();
+  if (!number) return null;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-
-    if (formData.company_website) {
-      toast.success("Your booking request has been sent! We'll contact you soon.");
-      setFormData({ name: "", email: "", phone: "", date: "", guests: "", message: "", company_website: "" });
-      setIsSubmitting(false);
-      return;
-    }
-
-    // Frontend-only: show success message
-    setTimeout(() => {
-      toast.success("Request received! Our concierge will contact you shortly via WhatsApp.");
-      setFormData({ name: "", email: "", phone: "", date: "", guests: "", message: "", company_website: "" });
-      setIsSubmitting(false);
-    }, 1000);
-  };
+  const isEs = lang === "es";
+  const href = buildWhatsAppLink(
+    number,
+    isEs
+      ? "Hola, me gustaria planear un atardecer en Puerto Vallarta."
+      : "Hi, I'd like help planning a sunset in Puerto Vallarta.",
+  );
 
   return (
     <section id="booking" className="py-24 px-6 md:px-10">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="rounded-3xl overflow-hidden h-[500px] shadow-2xl relative">
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent z-10"></div>
-            <img 
-              src="https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?q=80&w=1964&auto=format&fit=crop" 
-              alt="Puerto Vallarta sunset view" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute left-8 bottom-8 z-20 text-white">
-              <h3 className="text-3xl font-bold mb-2">Your Private Concierge</h3>
-              <p className="max-w-sm text-white/80">
-                Contact us for custom sunset itineraries and special requests. We're here to create your perfect vacation.
-              </p>
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-10">
-              <span className="text-sm font-medium text-ocean-600 tracking-wide uppercase">
-                Start Your Journey
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-4 text-gray-900">
-                Ready for an adventure?
-              </h2>
-              <p className="text-gray-600">
-                Fill out the form below, and we'll help you plan your perfect Puerto Vallarta sunset experience.
-              </p>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-               <div className="hidden">
-                 <label htmlFor="company_website">Website</label>
-                 <input
-                   type="text"
-                   id="company_website"
-                   name="company_website"
-                   value={formData.company_website}
-                   onChange={handleInputChange}
-                   tabIndex={-1}
-                   autoComplete="off"
-                 />
-               </div>
-
-              <div>
-                <Input
-                  placeholder="Your Name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="rounded-xl py-6"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="relative">
-                  <Input placeholder="Email" type="email" name="email" value={formData.email} onChange={handleInputChange} required className="rounded-xl py-6 pl-10" />
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                </div>
-                <div className="relative">
-                  <Input placeholder="Phone" type="tel" name="phone" value={formData.phone} onChange={handleInputChange} className="rounded-xl py-6 pl-10" />
-                  <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="relative">
-                  <Input placeholder="Preferred Date" type="date" name="date" value={formData.date} onChange={handleInputChange} className="rounded-xl py-6" />
-                  <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                </div>
-                <div className="relative">
-                  <Input placeholder="Number of Guests" type="number" name="guests" value={formData.guests} onChange={handleInputChange} min="1" className="rounded-xl py-6 pl-10" />
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                </div>
-              </div>
-
-              <div>
-                <Textarea
-                  placeholder="Tell us about your preferred tours or any special requests"
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  rows={4}
-                  className="rounded-xl resize-none"
-                />
-              </div>
-
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="w-full bg-ocean-600 hover:bg-ocean-700 text-white rounded-full py-6 flex items-center justify-center gap-2 disabled:opacity-70"
-              >
-                <Send className="h-4 w-4" />
-                {isSubmitting ? "Sending..." : "Send Request"}
-              </Button>
-            </form>
-          </div>
-        </div>
+      <div className="max-w-2xl mx-auto text-center">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+          {isEs ? "Escribenos por WhatsApp" : "Message us on WhatsApp"}
+        </h2>
+        <p className="text-gray-600 mb-8">
+          {isEs
+            ? "Cuentanos que buscas y te respondemos directamente."
+            : "Tell us what you are looking for and we reply directly."}
+        </p>
+        <a
+          href={href}
+          className="inline-flex items-center gap-2 rounded-full bg-ocean-600 hover:bg-ocean-700 text-white px-8 py-4 font-medium transition-colors"
+        >
+          <MessageCircle className="h-5 w-5" />
+          WhatsApp
+        </a>
       </div>
     </section>
   );

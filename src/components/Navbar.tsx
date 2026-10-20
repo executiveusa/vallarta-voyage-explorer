@@ -63,17 +63,6 @@ export const Navbar = () => {
             </li>
             <li>
               <a
-                href="/#tours"
-                className={cn(
-                  "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
-                  scrolled ? "text-gray-800" : "text-gray-900"
-                )}
-              >
-                Tours
-              </a>
-            </li>
-            <li>
-              <a
                 href="/#booking"
                 className={cn(
                   "font-medium transition-colors hover:text-ocean-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 hover:after:w-full after:bg-ocean-600 after:transition-all",
@@ -118,9 +107,6 @@ export const Navbar = () => {
             </Link>
           </li>
           <li>
-            <a href="/#tours" className="text-xl font-medium text-gray-800 hover:text-ocean-600" onClick={() => setOpen(false)}>
-              Tours
-            </a>
           </li>
           <li>
             <a href="/#booking" className="text-xl font-medium text-gray-800 hover:text-ocean-600" onClick={() => setOpen(false)}>

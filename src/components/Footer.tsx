@@ -82,14 +82,6 @@ export default function Footer() {
             </h4>
             <div className="space-y-4">
               <a
-                href="https://wa.me/523222000000"
-                className="flex items-center gap-3 hover:text-vv-gold transition-colors"
-                style={{ color: 'rgba(245,240,232,0.45)', fontSize: '13px' }}
-              >
-                <MessageCircle className="w-4 h-4 flex-shrink-0 text-green-400" />
-                WhatsApp
-              </a>
-              <a
                 href="https://instagram.com/verifiedvallarta"
                 className="flex items-center gap-3 hover:text-vv-gold transition-colors"
                 style={{ color: 'rgba(245,240,232,0.45)', fontSize: '13px' }}
@@ -123,8 +115,6 @@ export default function Footer() {
             <p><p>© {new Date().getFullYear()} Sunset Vallarta. All rights reserved.</p></p>
           </div>
           <div className="mt-4 md:mt-0 space-x-6">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>

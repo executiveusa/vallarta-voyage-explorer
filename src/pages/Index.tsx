@@ -2,10 +2,8 @@
 import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import ToursSection from "@/components/ToursSection";
 import BookingSection from "@/components/BookingSection";
 import Footer from "@/components/Footer";
-import Chatbot from "@/components/Chatbot";
 
 const Index = () => {
   // Smooth scroll functionality for anchor links
@@ -53,11 +51,9 @@ const Index = () => {
       <Navbar />
       <main id="main-content">
         <HeroSection />
-        <ToursSection />
         <BookingSection />
       </main>
       <Footer />
-      <Chatbot />
     </div>
   );
 };

@@ -33,7 +33,7 @@ const STRINGS: Record<string, Record<Lang, string>> = {
 
   // Directory
   'dir.title':          { es: 'Directorio Verificado', en: 'Verified Directory' },
-  'dir.subtitle':       { es: 'Cada negocio vetado personalmente por nuestro equipo', en: 'Every business personally vetted by our team' },
+  'dir.subtitle':       { es: 'Solo lugares reales', en: 'Real places only' },
   'dir.search':         { es: 'Buscar negocios...', en: 'Search businesses...' },
   'dir.all':            { es: 'Todos', en: 'All' },
   'dir.featured':       { es: 'Destacados', en: 'Featured' },

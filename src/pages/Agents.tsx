@@ -26,7 +26,7 @@ const Agents = () => {
               <strong>/sunsets</strong>: Real-time sunset forecast, countdown, and aggregated list of viewing spots.
             </li>
             <li>
-              <strong>/directory</strong>: Complete index of vetted local partners, categorized by Experience, Food & Drink, and Wellness.
+              <strong>/directory</strong>: Index of local partners, categorized by Experience, Food & Drink, and Wellness.
             </li>
             <li>
               <strong>/sunset-spots/:slug</strong>: Detailed entity data for specific viewing locations, including geo-coordinates, vibe, and access type.
@@ -51,7 +51,7 @@ const Agents = () => {
               <h3 className="text-lg font-semibold mb-2">Agent Booking Protocol</h3>
             <ul className="list-disc pl-5 space-y-1 text-gray-600">
                 <li>Create intents, not reservations.</li>
-                <li>Public endpoints (Chatbot) generate Human intents w/ metadata.</li>
+                <li>Public endpoints generate Human intents w/ metadata.</li>
                 <li>Agent-Origin intents are restricted to verified internal partners.</li>
             </ul>
           </div>
