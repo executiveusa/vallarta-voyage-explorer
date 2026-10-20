@@ -112,10 +112,15 @@ export default function Footer() {
         {/* Bottom section */}
         <div className="pt-10 border-t border-gray-800 text-center md:text-left md:flex md:justify-between text-gray-500 text-sm">
           <div>
-            <p><p>© {new Date().getFullYear()} Sunset Vallarta. All rights reserved.</p></p>
+            <p>© {year} Verified Vallarta</p>
           </div>
-          <div className="mt-4 md:mt-0 space-x-6">
-          </div>
+          <nav aria-label={isEs ? 'Confianza y legal' : 'Trust and legal'} className="mt-4 md:mt-0 flex flex-wrap justify-center gap-x-6 gap-y-2">
+            <Link to="/verified" className="hover:text-white">{isEs ? 'Cómo verificamos' : 'How we verify'}</Link>
+            <Link to="/how-we-make-money" className="hover:text-white">{isEs ? 'Cómo ganamos dinero' : 'How we make money'}</Link>
+            <Link to="/report" className="hover:text-white">{isEs ? 'Reportar un problema' : 'Report a problem'}</Link>
+            <Link to="/privacidad" className="hover:text-white">{isEs ? 'Privacidad' : 'Privacy'}</Link>
+            <Link to="/terms" className="hover:text-white">{isEs ? 'Términos' : 'Terms'}</Link>
+          </nav>
         </div>
       </div>
     </footer>

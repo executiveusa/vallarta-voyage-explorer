@@ -9,7 +9,8 @@ import Index from "./pages/Index";
 import Directory from "./pages/Directory";
 import Sunsets from "./pages/Sunsets";
 import SunsetSpotDetail from "./pages/SunsetSpotDetail";
-import Agents from "./pages/Agents";
+import TrustPage from "./pages/TrustPage";
+import Report from "./pages/Report";
 import ClaimListing from "./pages/ClaimListing";
 import NotFound from "./pages/NotFound";
 
@@ -27,7 +28,11 @@ const App = () => (
             <Route path="/directory" element={<Directory />} />
             <Route path="/sunsets" element={<Sunsets />} />
             <Route path="/sunset-spots/:slug" element={<SunsetSpotDetail />} />
-            <Route path="/agents" element={<Agents />} />
+            <Route path="/verified" element={<TrustPage page="verified" />} />
+            <Route path="/how-we-make-money" element={<TrustPage page="money" />} />
+            <Route path="/privacidad" element={<TrustPage page="privacy" />} />
+            <Route path="/terms" element={<TrustPage page="terms" />} />
+            <Route path="/report" element={<Report />} />
             <Route path="/claim" element={<ClaimListing />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client'
 import { useLang } from '@/context/LanguageContext'
 
 type PricingTier = 'demo' | 'base' | 'pro' | 'hotel'
@@ -78,10 +79,31 @@ export default function ClaimListing() {
     setSubmitting(true)
     setError(null)
 
-    // No backend is connected yet, so nothing can be received. Say so.
-    setError(isEs
-      ? 'Las solicitudes aun no estan abiertas. Vuelve pronto.'
-      : 'Applications are not open yet. Please check back soon.')
+    if (!isSupabaseConfigured) {
+      setError(isEs
+        ? 'Las solicitudes aun no estan abiertas. Vuelve pronto.'
+        : 'Applications are not open yet. Please check back soon.')
+      setSubmitting(false)
+      return
+    }
+    // Success is shown only after the row is really saved.
+    const { error: insertError } = await supabase.from('business_claims').insert({
+      business_name: form.businessName.trim(),
+      owner_name: form.ownerName.trim(),
+      phone: form.phone.trim(),
+      whatsapp: form.whatsapp.trim() || null,
+      email: form.email.trim() || null,
+      website: form.website.trim() || null,
+      category: form.category,
+      area: form.area.trim() || null,
+      description: form.description.trim() || null,
+      lang,
+    })
+    if (insertError) {
+      setError(isEs ? 'No pudimos guardar tu solicitud. Intentalo mas tarde.' : 'We could not save your application. Please try again later.')
+    } else {
+      setSubmitted(true)
+    }
     setSubmitting(false)
   }
 
