@@ -3,7 +3,6 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useSunsetSpots } from "@/hooks/useSunsetSpots";
 import { useShareCard } from "@/hooks/useShareCard";
-import { UGCSubmissionModal } from "@/components/UGCSubmissionModal";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ApprovedFeed } from "@/components/ApprovedFeed";
@@ -142,7 +141,7 @@ const Sunsets = () => {
 
             <div className="flex justify-center gap-4">
               <ShareCardButton area="" imageUrl="" spotName="" isForecast />
-              <UGCSubmissionModal />
+              
             </div>
           </div>
         </section>
